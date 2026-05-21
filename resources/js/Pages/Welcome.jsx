@@ -15,17 +15,17 @@ export default function Welcome() {
                     {/* <h1 className="text-5xl font-bold text-green-700">
                         Higrotek
                     </h1> */}
-              {logo ? (
-    <img
-        src={logo}
-        alt="Higrotek Logo"
-        className="h-32 md:h-48 lg:h-64 w-auto mb-4"
-    />
-) : (
-    <h1 className="text-5xl font-bold text-green-700">
-        Higrotek
-    </h1>
-)}
+                    {logo ? (
+                    <img
+                    src={logo}
+                    alt="Higrotek Logo"
+                    className="h-48 sm:h-56 md:h-64 lg:h-72 w-auto mb-4"
+                    />
+                    ) : (
+                    <h1 className="text-5xl font-bold text-green-700">
+                    Higrotek
+                    </h1>
+                    )}
                     <p className="mt-4 text-xl max-w-2xl text-gray-600">
                         Powering a cleaner future with smart, sustainable green energy solutions.
                     </p>
