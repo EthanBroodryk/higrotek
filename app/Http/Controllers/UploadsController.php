@@ -1,26 +1,30 @@
 <?php
 
+
 namespace App\Http\Controllers;
 
+use App\Models\CompanyLogo;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class UploadsController extends Controller
 {
     public function uploadLogo(Request $request)
     {
-        //dd($request);
         $request->validate([
-            'logo' => ['required', 'image', 'max:2048'], // 2MB
+            'logo' => ['required', 'image', 'max:2048'],
         ]);
 
-        // Store in /storage/app/public/logos
-        $path = $request->file('logo')->store('logos', 'public');
+        // deactivate old logos
+        CompanyLogo::where('is_active', true)->update(['is_active' => false]);
 
-        // // OPTIONAL: Save logo to user profile
-        // $user = Auth::user();
-        // $user->company_logo = $path;
-        // $user->save();
+        // store new logo
+        $path = $request->file('logo')->store('logos', 'public');
+        
+        // save to DB
+        CompanyLogo::create([
+            'path' => $path,
+            'is_active' => true,
+        ]);
 
         return back()->with('success', 'Logo uploaded successfully.');
     }

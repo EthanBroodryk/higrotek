@@ -1,20 +1,33 @@
 import { useState } from "react";
 import { Link } from "@inertiajs/react";
-
+import { usePage } from "@inertiajs/react";
 export default function Navbar() {
     const [open, setOpen] = useState(false);
-
+    const { logo } = usePage().props;
     return (
         <nav className="fixed top-0 left-0 w-full bg-white/80 backdrop-blur-lg shadow-sm z-50">
             <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                 
                 {/* LOGO */}
-                <Link href="/" className="flex items-center">
+                {/* <Link href="/" className="flex items-center">
                     <img
                         src="/storage/logos/niUKMliCL6aS7UG6vWofx23FQDnYNqA4CxSPn8TL.png"
                         alt="Higrotek Logo"
                         className="h-10 md:h-12 w-auto"
                     />
+                </Link> */}
+                <Link href="/" className="flex items-center">
+                    {logo ? (
+                        <img
+                            src={logo}
+                            alt="Logo"
+                            className="h-10 md:h-12 w-auto"
+                        />
+                    ) : (
+                        <span className="text-xl font-bold text-green-700">
+                            Higrotek
+                        </span>
+                    )}
                 </Link>
 
                 {/* DESKTOP MENU */}
