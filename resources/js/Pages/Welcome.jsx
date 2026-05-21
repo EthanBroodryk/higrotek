@@ -34,6 +34,22 @@ export default function Welcome() {
                     </div>
                 </section>
 
+                {/* WHO WE ARE */}
+                <section className="max-w-6xl mx-auto px-6 py-16">
+                    <h2 className="text-3xl font-bold text-green-700 mb-6">
+                        Who We Are
+                    </h2>
+
+                    <p className="text-gray-700 leading-relaxed">
+                        Higrotek Renewable Energy is a proudly South African company specialising in mid-size solar PV installations.
+                        We serve commercial and industrial clients nationwide with grid-tied and hybrid systems including battery energy storage (BESS).
+                    </p>
+
+                    <p className="mt-4 text-gray-700 leading-relaxed">
+                        Based in Gauteng, we focus on hands-on technical leadership, compliance, and long-term system performance.
+                    </p>
+                </section>
+
                 {/* SERVICES */}
                 <section className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-3 gap-8">
 
@@ -42,40 +58,101 @@ export default function Welcome() {
                             Solar Installations
                         </h3>
                         <p className="mt-2 text-gray-600">
-                            Residential and commercial solar energy systems designed for efficiency and savings.
+                            EPC solutions for commercial and industrial solar PV systems from design to commissioning.
                         </p>
                     </div>
 
                     <div className="p-6 bg-white rounded-2xl shadow">
                         <h3 className="text-xl font-semibold text-green-700">
-                            Energy Consulting
+                            Fault Finding & Maintenance
                         </h3>
                         <p className="mt-2 text-gray-600">
-                            Optimize your energy usage with expert sustainability planning and audits.
+                            Advanced diagnostics using professional tools, thermal imaging, and inverter analysis.
                         </p>
                     </div>
 
                     <div className="p-6 bg-white rounded-2xl shadow">
                         <h3 className="text-xl font-semibold text-green-700">
-                            Battery Storage
+                            Battery Storage (BESS)
                         </h3>
                         <p className="mt-2 text-gray-600">
-                            Reliable energy storage systems to keep your power running day and night.
+                            Hybrid and grid-tied battery systems for energy security and cost reduction.
                         </p>
                     </div>
 
                 </section>
 
-                {/* ABOUT SECTION */}
-                <section className="bg-green-700 text-white py-20 px-6 text-center">
-                    <h2 className="text-3xl font-bold">
-                        Building a Sustainable Future
+                {/* VISION & MISSION */}
+                <section className="bg-green-700 text-white py-20 px-6">
+                    <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10">
+
+                        <div>
+                            <h3 className="text-2xl font-bold">Our Vision</h3>
+                            <p className="mt-3 text-green-100">
+                                To drive South Africa’s transition to clean, reliable energy by being the solar partner of choice for quality-driven businesses.
+                            </p>
+                        </div>
+
+                        <div>
+                            <h3 className="text-2xl font-bold">Our Mission</h3>
+                            <p className="mt-3 text-green-100">
+                                To design, install, and maintain high-performance solar systems that reduce costs and improve energy security.
+                            </p>
+                        </div>
+
+                    </div>
+                </section>
+
+                {/* CORE STRENGTHS */}
+                <section className="max-w-6xl mx-auto px-6 py-20">
+                    <h2 className="text-3xl font-bold text-green-700 mb-8">
+                        Core Strengths
                     </h2>
 
-                    <p className="mt-4 max-w-3xl mx-auto text-green-100">
-                        Higrotek delivers innovative renewable energy solutions that reduce carbon footprints,
-                        lower electricity costs, and empower businesses and homeowners to go green.
-                    </p>
+                    <div className="grid md:grid-cols-2 gap-4 text-gray-700">
+                        {[
+                            "Solar PV Design & Installation (Rooftop, Carport, Ground Mount)",
+                            "Grid-Tied and Hybrid BESS Solutions",
+                            "Civil & Structural Installation Works",
+                            "Compliance Inspections (NRS/SANS)",
+                            "SSEG Application Assistance",
+                            "Fault Finding & Repairs",
+                            "Operations & Maintenance (O&M)",
+                            "Energy Monitoring & Optimisation"
+                        ].map((item, i) => (
+                            <div key={i} className="p-4 bg-gray-50 rounded-lg">
+                                {item}
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* LEADERSHIP */}
+                <section className="bg-green-50 py-20 px-6">
+                    <div className="max-w-6xl mx-auto">
+                        <h2 className="text-3xl font-bold text-green-700 mb-10">
+                            Leadership Team
+                        </h2>
+
+                        <div className="grid md:grid-cols-3 gap-6">
+
+                            <div className="bg-white p-6 rounded-xl shadow">
+                                <h3 className="font-semibold text-lg">Pieter Brand</h3>
+                                <p className="text-sm text-gray-600">Managing Director</p>
+                            </div>
+
+                            <div className="bg-white p-6 rounded-xl shadow">
+                                <h3 className="font-semibold text-lg">Dewald Becker</h3>
+                                <p className="text-sm text-gray-600">Head of Projects</p>
+                            </div>
+
+                            <div className="bg-white p-6 rounded-xl shadow">
+                                <h3 className="font-semibold text-lg">Rico du Plessis</h3>
+                                <p className="text-sm text-gray-600">Business Development</p>
+                            </div>
+
+                        </div>
+                    </div>
                 </section>
 
                 {/* CTA */}
@@ -85,7 +162,7 @@ export default function Welcome() {
                     </h2>
 
                     <p className="mt-2 text-gray-600">
-                        Let’s design a sustainable energy solution for your home or business.
+                        Let’s design a sustainable energy solution for your business.
                     </p>
 
                     <Link
@@ -98,7 +175,7 @@ export default function Welcome() {
 
                 {/* FOOTER */}
                 <footer className="py-10 text-center text-sm text-gray-500">
-                    © {new Date().getFullYear()} Higrotek. All rights reserved.
+                    © {new Date().getFullYear()} Higrotek Renewable Energy. All rights reserved.
                 </footer>
 
             </div>
