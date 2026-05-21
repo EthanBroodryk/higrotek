@@ -1,8 +1,9 @@
 import { Head, Link } from '@inertiajs/react';
-
+import Navbar from "@/Components/Navbar";
 export default function Welcome() {
     return (
         <>
+            <Navbar />
             <Head title="Higrotek - Green Energy Solutions" />
 
             <div className="min-h-screen bg-gradient-to-b from-green-50 to-white text-gray-800">
