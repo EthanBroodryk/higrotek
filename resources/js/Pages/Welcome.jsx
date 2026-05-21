@@ -10,9 +10,14 @@ export default function Welcome() {
 
                 {/* HERO */}
                 <section className="flex flex-col items-center justify-center text-center px-6 py-24">
-                    <h1 className="text-5xl font-bold text-green-700">
+                    {/* <h1 className="text-5xl font-bold text-green-700">
                         Higrotek
-                    </h1>
+                    </h1> */}
+                    <img
+                        src="/storage/logos/niUKMliCL6aS7UG6vWofx23FQDnYNqA4CxSPn8TL.png"
+                        alt="Higrotek Logo"
+                        className="h-32 md:h-48 lg:h-64 w-auto mb-4"
+                    />
 
                     <p className="mt-4 text-xl max-w-2xl text-gray-600">
                         Powering a cleaner future with smart, sustainable green energy solutions.
