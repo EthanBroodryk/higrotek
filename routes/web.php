@@ -16,6 +16,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/stories', [StoryController::class, 'store'])->name('stories.store');
     Route::get('/stories/{story}', [StoryController::class, 'show'])->name('stories.show');
     Route::delete('/stories/{story}', [StoryController::class, 'destroy'])->name('stories.destroy');
+    Route::get('/stories/{story}/edit', [StoryController::class, 'edit'])->name('stories.edit');
 });
 
 Route::get('/', function () {

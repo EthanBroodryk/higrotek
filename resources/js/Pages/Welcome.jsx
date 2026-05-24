@@ -11,7 +11,7 @@ export default function Welcome() {
             <div className="min-h-screen bg-gradient-to-b from-green-50 to-white text-gray-800">
 
                 {/* HERO */}
-                <section className="flex flex-col items-center justify-center text-center px-6 py-24">
+                <section  id="hero" className="flex flex-col items-center justify-center text-center px-6 py-24">
                     {/* <h1 className="text-5xl font-bold text-green-700">
                         Higrotek
                     </h1> */}
@@ -48,7 +48,7 @@ export default function Welcome() {
                 </section>
 
                 {/* WHO WE ARE */}
-                <section className="max-w-6xl mx-auto px-6 py-16">
+                <section id="who-we-are" className="max-w-6xl mx-auto px-6 py-16">
                     <h2 className="text-3xl font-bold text-green-700 mb-6">
                         Who We Are
                     </h2>
@@ -63,37 +63,7 @@ export default function Welcome() {
                     </p>
                 </section>
 
-                {/* SERVICES */}
-                <section className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-3 gap-8">
-
-                    <div className="p-6 bg-white rounded-2xl shadow">
-                        <h3 className="text-xl font-semibold text-green-700">
-                            Solar Installations
-                        </h3>
-                        <p className="mt-2 text-gray-600">
-                            EPC solutions for commercial and industrial solar PV systems from design to commissioning.
-                        </p>
-                    </div>
-
-                    <div className="p-6 bg-white rounded-2xl shadow">
-                        <h3 className="text-xl font-semibold text-green-700">
-                            Fault Finding & Maintenance
-                        </h3>
-                        <p className="mt-2 text-gray-600">
-                            Advanced diagnostics using professional tools, thermal imaging, and inverter analysis.
-                        </p>
-                    </div>
-
-                    <div className="p-6 bg-white rounded-2xl shadow">
-                        <h3 className="text-xl font-semibold text-green-700">
-                            Battery Storage (BESS)
-                        </h3>
-                        <p className="mt-2 text-gray-600">
-                            Hybrid and grid-tied battery systems for energy security and cost reduction.
-                        </p>
-                    </div>
-
-                </section>
+              
 
                 {/* VISION & MISSION */}
                 <section className="bg-green-700 text-white py-20 px-6">
@@ -140,6 +110,39 @@ export default function Welcome() {
                     </div>
                 </section>
 
+                  {/* SERVICES */}
+               
+                <section id="services"  className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-3 gap-8">
+
+                    <div className="p-6 bg-white rounded-2xl shadow">
+                        <h3 className="text-xl font-semibold text-green-700">
+                            Solar Installations
+                        </h3>
+                        <p className="mt-2 text-gray-600">
+                            EPC solutions for commercial and industrial solar PV systems from design to commissioning.
+                        </p>
+                    </div>
+
+                    <div className="p-6 bg-white rounded-2xl shadow">
+                        <h3 className="text-xl font-semibold text-green-700">
+                            Fault Finding & Maintenance
+                        </h3>
+                        <p className="mt-2 text-gray-600">
+                            Advanced diagnostics using professional tools, thermal imaging, and inverter analysis.
+                        </p>
+                    </div>
+
+                    <div className="p-6 bg-white rounded-2xl shadow">
+                        <h3 className="text-xl font-semibold text-green-700">
+                            Battery Storage (BESS)
+                        </h3>
+                        <p className="mt-2 text-gray-600">
+                            Hybrid and grid-tied battery systems for energy security and cost reduction.
+                        </p>
+                    </div>
+
+                </section>
+
                 {/* LEADERSHIP */}
                 <section className="bg-green-50 py-20 px-6">
                     <div className="max-w-6xl mx-auto">
@@ -169,7 +172,8 @@ export default function Welcome() {
                 </section>
 
                 {/* CTA */}
-                <section className="py-20 text-center px-6">
+                <section id="contact-cta" className="py-20 text-center px-6"
+>
                     <h2 className="text-3xl font-bold text-gray-800">
                         Ready to switch to green energy?
                     </h2>

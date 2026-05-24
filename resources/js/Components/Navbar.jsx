@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "@inertiajs/react";
 import { usePage } from "@inertiajs/react";
 export default function Navbar() {
+    const [active, setActive] = useState("home");
     const [open, setOpen] = useState(false);
     const { logo } = usePage().props;
     return (
@@ -16,7 +17,7 @@ export default function Navbar() {
                         className="h-10 md:h-12 w-auto"
                     />
                 </Link> */}
-                <Link href="/" className="flex items-center">
+                {/* <Link href="/" className="flex items-center">
                     {logo ? (
                         <img
                             src={logo}
@@ -28,25 +29,107 @@ export default function Navbar() {
                             Higrotek
                         </span>
                     )}
-                </Link>
+                </Link> */}
+
+                <button
+                    onClick={() => {
+                        setActive("home");
+                        document.getElementById("hero")?.scrollIntoView({
+                            behavior: "smooth",
+                        });
+                    }}
+                    className="flex items-center"
+                    >
+                    {logo ? (
+                    <img
+                        src={logo}
+                        alt="Logo"
+                        className="h-10 md:h-12 w-auto"
+                        />
+                    ) : (
+                    <span className="text-xl font-bold text-green-700">
+                        Higrotek
+                    </span>
+                    )}
+                </button>
 
                 {/* DESKTOP MENU */}
                 <div className="hidden md:flex gap-8 text-gray-700 font-medium">
-                    <Link href="/" className="hover:text-green-700 transition">Home</Link>
-                    <Link href="/about" className="hover:text-green-700 transition">About</Link>
-                    <Link href="/services" className="hover:text-green-700 transition">Services</Link>
-                    <Link href="/contact" className="hover:text-green-700 transition">Contact</Link>
-                </div>
-
-                {/* CTA BUTTON (Desktop) */}
+                    {/* <Link href="/" className="hover:text-green-700 transition">Home</Link> */}
+                    <button
+                        onClick={() => {
+                            setActive("home");
+                            document.getElementById("hero")?.scrollIntoView({
+                                behavior: "smooth",
+                            });
+                        }}
+                        className={`transition ${
+                            active === "home"
+                            ? "text-green-700 font-semibold"
+                            : "text-gray-700"
+                        }`}
+                        >
+                        Home
+                    </button>
+                    {/* <Link href="/about" className="hover:text-green-700 transition">About</Link> */}
+                    <button
+                        onClick={() => {
+                            setActive("about");
+                                document.getElementById("who-we-are")?.scrollIntoView({
+                                behavior: "smooth",
+                            });
+                        }}
+                        className={`transition ${
+                            active === "about"
+                            ? "text-green-700 font-semibold"
+                            : "text-gray-700"
+                        }`}
+                        >
+                        About
+                    </button>
+                    {/* <Link href="/services" className="hover:text-green-700 transition">Services</Link> */}
+                    <button
+                        onClick={() => {
+                            setActive("services");
+                            document.getElementById("services")?.scrollIntoView({
+                                behavior: "smooth",
+                            });
+                        }}
+                        className={`transition ${
+                            active === "services"
+                            ? "text-green-700 font-semibold"
+                            : "text-gray-700"
+                        }`}
+                    >
+                    Services
+                    </button>
+                                    {/* CTA BUTTON (Desktop) */}
                 <div className="hidden md:block">
-                    <Link
+                    {/* <Link
                         href="/contact"
                         className="px-5 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition"
                     >
                         Get a Quote
-                    </Link>
+                    </Link> */}
+                    <button
+                    onClick={() => {
+                    setActive("contact");
+                    document.getElementById("contact-cta")?.scrollIntoView({
+                    behavior: "smooth",
+                    });
+                    }}
+                    className={`transition ${
+                    active === "contact"
+                    ? "text-green-700 font-semibold"
+                    : "text-gray-700"
+                    }`}
+                    >
+                    Contact
+                    </button>
                 </div>
+                </div>
+
+
 
                 {/* MOBILE MENU BUTTON */}
                 <button
@@ -74,27 +157,73 @@ export default function Navbar() {
                     >
                         Home
                     </Link>
-
+{/* 
                     <Link 
                         href="/about" 
                         className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-700 transition"
                     >
                         About
-                    </Link>
+                    </Link> */}
 
-                    <Link 
+                    <button
+                        onClick={() => {
+                                setOpen(false);
+                                document.getElementById("who-we-are")?.scrollIntoView({
+                                    behavior: "smooth",
+                                });
+                            }}
+                            className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-700 transition w-full text-left"
+                            >
+                        About
+                    </button>
+
+                    {/* <Link 
                         href="/services" 
                         className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-700 transition"
                     >
                         Services
-                    </Link>
+                    </Link> */}
 
-                    <Link 
+                    <button
+                        onClick={() => {
+                            setOpen(false);
+                            setActive("services");
+                            document.getElementById("services")?.scrollIntoView({
+                                behavior: "smooth",
+                            });
+                        }}
+                        className={`block px-6 py-3 w-full text-left transition ${
+                        active === "services"
+                        ? "text-green-700 font-semibold bg-green-50"
+                        : "text-gray-700 hover:bg-green-50 hover:text-green-700"
+                        }`}
+                        >
+                        Services
+                    </button>
+
+                    {/* <Link 
                         href="/contact" 
                         className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-700 transition"
                     >
                         Contact
-                    </Link>
+                    </Link> */}
+
+                    <button
+                        onClick={() => {
+                            setOpen(false);
+                            setActive("contact");
+                            document.getElementById("contact-cta")?.scrollIntoView({
+                                behavior: "smooth",
+                            });
+                        }}
+                        className={`block px-6 py-3 w-full text-left transition ${
+                            active === "contact"
+                                ? "text-green-700 font-semibold bg-green-50"
+                                : "text-gray-700 hover:bg-green-50 hover:text-green-700"
+                        }`}
+                    >
+                        Contact
+                    </button>
 
                     <Link 
                         href="/contact"
