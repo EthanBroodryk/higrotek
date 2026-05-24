@@ -7,32 +7,45 @@ import { useState } from 'react';
 
 export default function AuthenticatedLayout({ header, children }) {
     const user = usePage().props.auth.user;
-
-    const [showingNavigationDropdown, setShowingNavigationDropdown] =
-        useState(false);
+    const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            <nav className="border-b border-gray-100 bg-white">
+        <div className="min-h-screen bg-gray-50/50">
+            {/* =========================================================
+                STICKY MODERN NAVIGATION
+            ========================================================= */}
+            <nav className="sticky top-0 z-50 border-b border-gray-200/80 bg-white/80 backdrop-blur-md">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 justify-between">
+                        
+                        {/* Left Side: Logo & Main Navigation */}
                         <div className="flex">
                             <div className="flex shrink-0 items-center">
-                                <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
+                                <Link href={route('dashboard')} className="transition hover:opacity-90">
+                                    <ApplicationLogo className="block h-9 w-auto fill-current text-green-600" />
                                 </Link>
                             </div>
 
-                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            {/* Desktop Links */}
+                            <div className="hidden space-x-6 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink
                                     href={route('dashboard')}
                                     active={route().current('dashboard')}
                                 >
                                     Dashboard
                                 </NavLink>
+                                
+                                {/* Added modern Job Cards Nav Link pairing */}
+                                <NavLink
+                                  href={route('stories.index')}
+                                  active={route().current('stories.*')}
+                                >
+                                    Stories/Events
+                                </NavLink>
                             </div>
                         </div>
 
+                        {/* Right Side: Desktop Profile Dropdown */}
                         <div className="hidden sm:ms-6 sm:flex sm:items-center">
                             <div className="relative ms-3">
                                 <Dropdown>
@@ -40,12 +53,17 @@ export default function AuthenticatedLayout({ header, children }) {
                                         <span className="inline-flex rounded-md">
                                             <button
                                                 type="button"
-                                                className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
+                                                className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 hover:text-gray-900 focus:outline-none"
                                             >
+                                                {/* Clean Avatar Circle Initials trick */}
+                                                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-xs font-semibold text-green-700">
+                                                    {user.name.charAt(0).toUpperCase()}
+                                                </div>
+                                                
                                                 {user.name}
 
                                                 <svg
-                                                    className="-me-0.5 ms-2 h-4 w-4"
+                                                    className="-me-0.5 ms-1 h-4 w-4 text-gray-400 transition-transform duration-200"
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 20 20"
                                                     fill="currentColor"
@@ -60,16 +78,19 @@ export default function AuthenticatedLayout({ header, children }) {
                                         </span>
                                     </Dropdown.Trigger>
 
-                                    <Dropdown.Content>
-                                        <Dropdown.Link
-                                            href={route('profile.edit')}
-                                        >
-                                            Profile
+                                    <Dropdown.Content contentClasses="py-1 bg-white rounded-xl shadow-lg ring-1 ring-black/5">
+                                        <div className="border-b border-gray-100 px-4 py-2 text-xs text-gray-400">
+                                            Manage Account
+                                        </div>
+                                        <Dropdown.Link href={route('profile.edit')}>
+                                            Profile Settings
                                         </Dropdown.Link>
+                                        <div className="border-t border-gray-100 my-1"></div>
                                         <Dropdown.Link
                                             href={route('logout')}
                                             method="post"
                                             as="button"
+                                            className="w-full text-start text-red-600 hover:bg-red-50/60"
                                         >
                                             Log Out
                                         </Dropdown.Link>
@@ -78,38 +99,23 @@ export default function AuthenticatedLayout({ header, children }) {
                             </div>
                         </div>
 
+                        {/* Hamburger Trigger button */}
                         <div className="-me-2 flex items-center sm:hidden">
                             <button
-                                onClick={() =>
-                                    setShowingNavigationDropdown(
-                                        (previousState) => !previousState,
-                                    )
-                                }
-                                className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
+                                onClick={() => setShowingNavigationDropdown((prev) => !prev)}
+                                className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-gray-500 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-700 focus:outline-none"
+                                aria-label="Main Menu Toggle"
                             >
-                                <svg
-                                    className="h-6 w-6"
-                                    stroke="currentColor"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
+                                <svg className="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                                     <path
-                                        className={
-                                            !showingNavigationDropdown
-                                                ? 'inline-flex'
-                                                : 'hidden'
-                                        }
+                                        className={!showingNavigationDropdown ? 'inline-flex' : 'hidden'}
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                         strokeWidth="2"
                                         d="M4 6h16M4 12h16M4 18h16"
                                     />
                                     <path
-                                        className={
-                                            showingNavigationDropdown
-                                                ? 'inline-flex'
-                                                : 'hidden'
-                                        }
+                                        className={showingNavigationDropdown ? 'inline-flex' : 'hidden'}
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                         strokeWidth="2"
@@ -121,12 +127,10 @@ export default function AuthenticatedLayout({ header, children }) {
                     </div>
                 </div>
 
-                <div
-                    className={
-                        (showingNavigationDropdown ? 'block' : 'hidden') +
-                        ' sm:hidden'
-                    }
-                >
+                {/* =========================================================
+                    MOBILE NAV DROPDOWN PANEL
+                ========================================================= */}
+                <div className={`${showingNavigationDropdown ? 'block opacity-100' : 'hidden opacity-0'} transition-all duration-200 sm:hidden border-t border-gray-100 bg-white`}>
                     <div className="space-y-1 pb-3 pt-2">
                         <ResponsiveNavLink
                             href={route('dashboard')}
@@ -134,26 +138,36 @@ export default function AuthenticatedLayout({ header, children }) {
                         >
                             Dashboard
                         </ResponsiveNavLink>
+                        
+                        <ResponsiveNavLink
+                                href={route('stories.index')}
+                                active={route().current('stories.*')}
+                            >
+                                Stories / Events
+                        </ResponsiveNavLink>
                     </div>
 
-                    <div className="border-t border-gray-200 pb-1 pt-4">
-                        <div className="px-4">
-                            <div className="text-base font-medium text-gray-800">
-                                {user.name}
+                    {/* Mobile Profile & Action Links Tray */}
+                    <div className="border-t border-gray-100 pb-3 pt-4 bg-gray-50/70">
+                        <div className="flex items-center px-4 mb-3">
+                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-600 text-sm font-bold text-white shadow-sm">
+                                {user.name.charAt(0).toUpperCase()}
                             </div>
-                            <div className="text-sm font-medium text-gray-500">
-                                {user.email}
+                            <div className="ms-3">
+                                <div className="text-sm font-semibold text-gray-800">{user.name}</div>
+                                <div className="text-xs font-medium text-gray-500">{user.email}</div>
                             </div>
                         </div>
 
-                        <div className="mt-3 space-y-1">
+                        <div className="space-y-1">
                             <ResponsiveNavLink href={route('profile.edit')}>
-                                Profile
+                                Profile Settings
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 method="post"
                                 href={route('logout')}
                                 as="button"
+                                className="text-red-600 hover:bg-red-50/50 hover:text-red-700"
                             >
                                 Log Out
                             </ResponsiveNavLink>
@@ -162,15 +176,17 @@ export default function AuthenticatedLayout({ header, children }) {
                 </div>
             </nav>
 
+            {/* Header Content Section Block */}
             {header && (
-                <header className="bg-white shadow">
-                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <header className="bg-white border-b border-gray-100">
+                    <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
                         {header}
                     </div>
                 </header>
             )}
 
-            <main>{children}</main>
+            {/* Main Application Core Layout Workspace Slot */}
+            <main className="mx-auto max-w-7xl">{children}</main>
         </div>
     );
 }
