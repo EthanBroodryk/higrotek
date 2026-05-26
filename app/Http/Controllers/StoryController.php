@@ -16,8 +16,8 @@ class StoryController extends Controller
     {
         $logo = CompanyLogo::where('is_active', true)->first();
         
-        // Eager load the images relationship with the story list query
-        $stories = Story::with(['images', 'coverImage'])->latest()->get();
+   
+        $stories = Story::with(['images', 'coverImage', 'user'])->latest()->get();
         
         return Inertia::render('Welcome', [
             'stories'        => $stories,
@@ -31,9 +31,8 @@ class StoryController extends Controller
 
     public function index()
     {
-        // Load relationships for backend dashboard index list too
-        $stories = Story::with(['images', 'coverImage'])->latest()->get();
-
+   
+        $stories = Story::with(['images', 'coverImage', 'user'])->latest()->get();
         return Inertia::render('Stories/Index', [
             'stories' => $stories,
         ]);
@@ -50,23 +49,20 @@ class StoryController extends Controller
             'title'       => 'required|string|max:255',
             'description' => 'required|string',
             'images'      => 'nullable|array',
-            'images.*'    => 'image|max:2048', // 2MB max per image
+            'images.*'    => 'image|max:2048',
         ]);
 
-        // 1. Initialize and create the base Story model entry 
         $story = Story::create([
-            'user_id'      => auth()->id(), // maps active user ID cleanly
+            'user_id'      => auth()->id(),
             'title'        => $validated['title'],
             'description'  => $validated['description'],
             'is_published' => true,
         ]);
 
-        // 2. Loop through and save all uploaded images onto the public storage disk
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $index => $file) {
                 $path = $file->store('stories', 'public');
 
-                // Designate the very first image ($index === 0) as the cover photo
                 $story->images()->create([
                     'path'     => $path,
                     'is_cover' => $index === 0, 
@@ -79,8 +75,8 @@ class StoryController extends Controller
 
     public function show(Story $story)
     {
-        // Load full image stack when opening the story detail page view
-        $story->load(['images', 'coverImage']);
+     
+        $story->load(['images', 'coverImage', 'user']);
 
         return Inertia::render('Stories/Show', [
             'story' => $story,

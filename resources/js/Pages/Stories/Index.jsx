@@ -98,7 +98,7 @@ export default function Index({ stories }) {
                                             <Link
                                                 href={route('stories.show', story.id)}
                                                 className="text-blue-600 font-semibold hover:underline"
-                                            >
+                                                >
                                                 View Details
                                             </Link>
                                         </div>
