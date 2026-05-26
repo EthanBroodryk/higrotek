@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "@inertiajs/react";
 import { usePage } from "@inertiajs/react";
+
 export default function Navbar() {
     const [active, setActive] = useState("home");
     const [open, setOpen] = useState(false);
@@ -9,28 +10,7 @@ export default function Navbar() {
         <nav className="fixed top-0 left-0 w-full bg-white/80 backdrop-blur-lg shadow-sm z-50">
             <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                 
-                {/* LOGO */}
-                {/* <Link href="/" className="flex items-center">
-                    <img
-                        src="/storage/logos/niUKMliCL6aS7UG6vWofx23FQDnYNqA4CxSPn8TL.png"
-                        alt="Higrotek Logo"
-                        className="h-10 md:h-12 w-auto"
-                    />
-                </Link> */}
-                {/* <Link href="/" className="flex items-center">
-                    {logo ? (
-                        <img
-                            src={logo}
-                            alt="Logo"
-                            className="h-10 md:h-12 w-auto"
-                        />
-                    ) : (
-                        <span className="text-xl font-bold text-green-700">
-                            Higrotek
-                        </span>
-                    )}
-                </Link> */}
-
+                {/* LOGO CONTAINER */}
                 <button
                     onClick={() => {
                         setActive("home");
@@ -39,23 +19,22 @@ export default function Navbar() {
                         });
                     }}
                     className="flex items-center"
-                    >
+                >
                     {logo ? (
-                    <img
-                        src={logo}
-                        alt="Logo"
-                        className="h-10 md:h-12 w-auto"
+                        <img
+                            src={logo}
+                            alt="Logo"
+                            className="h-10 md:h-12 w-auto"
                         />
                     ) : (
-                    <span className="text-xl font-bold text-green-700">
-                        Higrotek
-                    </span>
+                        <span className="text-xl font-bold text-blue-700">
+                            Higrotek
+                        </span>
                     )}
                 </button>
 
                 {/* DESKTOP MENU */}
                 <div className="hidden md:flex gap-8 text-gray-700 font-medium">
-                    {/* <Link href="/" className="hover:text-green-700 transition">Home</Link> */}
                     <button
                         onClick={() => {
                             setActive("home");
@@ -65,29 +44,29 @@ export default function Navbar() {
                         }}
                         className={`transition ${
                             active === "home"
-                            ? "text-green-700 font-semibold"
-                            : "text-gray-700"
+                                ? "text-blue-700 font-semibold"
+                                : "text-gray-700 hover:text-blue-700"
                         }`}
-                        >
+                    >
                         Home
                     </button>
-                    {/* <Link href="/about" className="hover:text-green-700 transition">About</Link> */}
+
                     <button
                         onClick={() => {
                             setActive("about");
-                                document.getElementById("who-we-are")?.scrollIntoView({
+                            document.getElementById("who-we-are")?.scrollIntoView({
                                 behavior: "smooth",
                             });
                         }}
                         className={`transition ${
                             active === "about"
-                            ? "text-green-700 font-semibold"
-                            : "text-gray-700"
+                                ? "text-blue-700 font-semibold"
+                                : "text-gray-700 hover:text-blue-700"
                         }`}
-                        >
+                    >
                         About
                     </button>
-                    {/* <Link href="/services" className="hover:text-green-700 transition">Services</Link> */}
+
                     <button
                         onClick={() => {
                             setActive("services");
@@ -97,39 +76,32 @@ export default function Navbar() {
                         }}
                         className={`transition ${
                             active === "services"
-                            ? "text-green-700 font-semibold"
-                            : "text-gray-700"
+                                ? "text-blue-700 font-semibold"
+                                : "text-gray-700 hover:text-blue-700"
                         }`}
                     >
-                    Services
+                        Services
                     </button>
-                                    {/* CTA BUTTON (Desktop) */}
-                <div className="hidden md:block">
-                    {/* <Link
-                        href="/contact"
-                        className="px-5 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition"
-                    >
-                        Get a Quote
-                    </Link> */}
-                    <button
-                    onClick={() => {
-                    setActive("contact");
-                    document.getElementById("contact-cta")?.scrollIntoView({
-                    behavior: "smooth",
-                    });
-                    }}
-                    className={`transition ${
-                    active === "contact"
-                    ? "text-green-700 font-semibold"
-                    : "text-gray-700"
-                    }`}
-                    >
-                    Contact
-                    </button>
+                    
+                    {/* CTA BUTTON (Desktop Trigger) */}
+                    <div className="hidden md:block">
+                        <button
+                            onClick={() => {
+                                setActive("contact");
+                                document.getElementById("contact-cta")?.scrollIntoView({
+                                    behavior: "smooth",
+                                });
+                            }}
+                            className={`transition ${
+                                active === "contact"
+                                    ? "text-blue-700 font-semibold"
+                                    : "text-gray-700 hover:text-blue-700"
+                            }`}
+                        >
+                            Contact
+                        </button>
+                    </div>
                 </div>
-                </div>
-
-
 
                 {/* MOBILE MENU BUTTON */}
                 <button
@@ -153,36 +125,23 @@ export default function Navbar() {
                 <div className="md:hidden bg-white shadow-sm border-t">
                     <Link 
                         href="/" 
-                        className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-700 transition"
+                        className="block px-6 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition"
                     >
                         Home
                     </Link>
-{/* 
-                    <Link 
-                        href="/about" 
-                        className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-700 transition"
-                    >
-                        About
-                    </Link> */}
 
                     <button
                         onClick={() => {
-                                setOpen(false);
-                                document.getElementById("who-we-are")?.scrollIntoView({
-                                    behavior: "smooth",
-                                });
-                            }}
-                            className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-700 transition w-full text-left"
-                            >
+                            setOpen(false);
+                            setActive("about");
+                            document.getElementById("who-we-are")?.scrollIntoView({
+                                behavior: "smooth",
+                            });
+                        }}
+                        className="block px-6 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition w-full text-left"
+                    >
                         About
                     </button>
-
-                    {/* <Link 
-                        href="/services" 
-                        className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-700 transition"
-                    >
-                        Services
-                    </Link> */}
 
                     <button
                         onClick={() => {
@@ -193,20 +152,13 @@ export default function Navbar() {
                             });
                         }}
                         className={`block px-6 py-3 w-full text-left transition ${
-                        active === "services"
-                        ? "text-green-700 font-semibold bg-green-50"
-                        : "text-gray-700 hover:bg-green-50 hover:text-green-700"
+                            active === "services"
+                                ? "text-blue-700 font-semibold bg-blue-50"
+                                : "text-gray-700 hover:bg-blue-50 hover:text-blue-700"
                         }`}
-                        >
+                    >
                         Services
                     </button>
-
-                    {/* <Link 
-                        href="/contact" 
-                        className="block px-6 py-3 text-gray-700 hover:bg-green-50 hover:text-green-700 transition"
-                    >
-                        Contact
-                    </Link> */}
 
                     <button
                         onClick={() => {
@@ -218,8 +170,8 @@ export default function Navbar() {
                         }}
                         className={`block px-6 py-3 w-full text-left transition ${
                             active === "contact"
-                                ? "text-green-700 font-semibold bg-green-50"
-                                : "text-gray-700 hover:bg-green-50 hover:text-green-700"
+                                ? "text-blue-700 font-semibold bg-blue-50"
+                                : "text-gray-700 hover:bg-blue-50 hover:text-blue-700"
                         }`}
                     >
                         Contact
@@ -227,7 +179,7 @@ export default function Navbar() {
 
                     <Link 
                         href="/contact"
-                        className="block mx-6 my-4 px-5 py-3 bg-green-600 text-center text-white rounded-xl hover:bg-green-700 transition"
+                        className="block mx-6 my-4 px-5 py-3 bg-blue-600 text-center text-white rounded-xl hover:bg-blue-700 transition"
                     >
                         Get a Quote
                     </Link>

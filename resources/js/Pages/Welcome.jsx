@@ -1,46 +1,44 @@
 import { Head, Link } from '@inertiajs/react';
 import Navbar from "@/Components/Navbar";
 import { usePage } from '@inertiajs/react';
+
 export default function Welcome() {
     const { logo } = usePage().props;
     return (
         <>
             <Navbar />
-            <Head title="Higrotek - Green Energy Solutions" />
+            <Head title="Higrotek - Blue Energy Solutions" />
 
-            <div className="min-h-screen bg-gradient-to-b from-green-50 to-white text-gray-800">
+            <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white text-gray-800">
 
                 {/* HERO */}
-                <section  id="hero" className="flex flex-col items-center justify-center text-center px-6 py-24">
-                    {/* <h1 className="text-5xl font-bold text-green-700">
-                        Higrotek
-                    </h1> */}
+                <section id="hero" className="flex flex-col items-center justify-center text-center px-6 py-24">
                     {logo ? (
-                    <img
-                    src={logo}
-                    alt="Higrotek Logo"
-                    className="h-48 sm:h-56 md:h-64 lg:h-72 w-auto mb-4"
-                    />
+                        <img
+                            src={logo}
+                            alt="Higrotek Logo"
+                            className="h-48 sm:h-56 md:h-64 lg:h-72 w-auto mb-4"
+                        />
                     ) : (
-                    <h1 className="text-5xl font-bold text-green-700">
-                    Higrotek
-                    </h1>
+                        <h1 className="text-5xl font-bold text-blue-700">
+                            Higrotek
+                        </h1>
                     )}
                     <p className="mt-4 text-xl max-w-2xl text-gray-600">
-                        Powering a cleaner future with smart, sustainable green energy solutions.
+                        Powering a cleaner future with smart, sustainable energy solutions.
                     </p>
 
                     <div className="mt-8 flex gap-4">
                         <Link
                             href="/contact"
-                            className="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition"
+                            className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
                         >
                             Get a Quote
                         </Link>
 
                         <Link
                             href="/about"
-                            className="px-6 py-3 border border-green-600 text-green-700 rounded-xl hover:bg-green-50 transition"
+                            className="px-6 py-3 border border-blue-600 text-blue-700 rounded-xl hover:bg-blue-50 transition"
                         >
                             Learn More
                         </Link>
@@ -49,7 +47,7 @@ export default function Welcome() {
 
                 {/* WHO WE ARE */}
                 <section id="who-we-are" className="max-w-6xl mx-auto px-6 py-16">
-                    <h2 className="text-3xl font-bold text-green-700 mb-6">
+                    <h2 className="text-3xl font-bold text-blue-700 mb-6">
                         Who We Are
                     </h2>
 
@@ -63,22 +61,20 @@ export default function Welcome() {
                     </p>
                 </section>
 
-              
-
                 {/* VISION & MISSION */}
-                <section className="bg-green-700 text-white py-20 px-6">
+                <section className="bg-blue-700 text-white py-20 px-6">
                     <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10">
 
                         <div>
                             <h3 className="text-2xl font-bold">Our Vision</h3>
-                            <p className="mt-3 text-green-100">
+                            <p className="mt-3 text-blue-100">
                                 To drive South Africa’s transition to clean, reliable energy by being the solar partner of choice for quality-driven businesses.
                             </p>
                         </div>
 
                         <div>
                             <h3 className="text-2xl font-bold">Our Mission</h3>
-                            <p className="mt-3 text-green-100">
+                            <p className="mt-3 text-blue-100">
                                 To design, install, and maintain high-performance solar systems that reduce costs and improve energy security.
                             </p>
                         </div>
@@ -88,7 +84,7 @@ export default function Welcome() {
 
                 {/* CORE STRENGTHS */}
                 <section className="max-w-6xl mx-auto px-6 py-20">
-                    <h2 className="text-3xl font-bold text-green-700 mb-8">
+                    <h2 className="text-3xl font-bold text-blue-700 mb-8">
                         Core Strengths
                     </h2>
 
@@ -110,12 +106,11 @@ export default function Welcome() {
                     </div>
                 </section>
 
-                  {/* SERVICES */}
-               
-                <section id="services"  className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-3 gap-8">
+                {/* SERVICES */}
+                <section id="services" className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-3 gap-8">
 
                     <div className="p-6 bg-white rounded-2xl shadow">
-                        <h3 className="text-xl font-semibold text-green-700">
+                        <h3 className="text-xl font-semibold text-blue-700">
                             Solar Installations
                         </h3>
                         <p className="mt-2 text-gray-600">
@@ -124,7 +119,7 @@ export default function Welcome() {
                     </div>
 
                     <div className="p-6 bg-white rounded-2xl shadow">
-                        <h3 className="text-xl font-semibold text-green-700">
+                        <h3 className="text-xl font-semibold text-blue-700">
                             Fault Finding & Maintenance
                         </h3>
                         <p className="mt-2 text-gray-600">
@@ -133,7 +128,7 @@ export default function Welcome() {
                     </div>
 
                     <div className="p-6 bg-white rounded-2xl shadow">
-                        <h3 className="text-xl font-semibold text-green-700">
+                        <h3 className="text-xl font-semibold text-blue-700">
                             Battery Storage (BESS)
                         </h3>
                         <p className="mt-2 text-gray-600">
@@ -144,9 +139,9 @@ export default function Welcome() {
                 </section>
 
                 {/* LEADERSHIP */}
-                <section className="bg-green-50 py-20 px-6">
+                <section className="bg-blue-50 py-20 px-6">
                     <div className="max-w-6xl mx-auto">
-                        <h2 className="text-3xl font-bold text-green-700 mb-10">
+                        <h2 className="text-3xl font-bold text-blue-700 mb-10">
                             Leadership Team
                         </h2>
 
@@ -172,10 +167,9 @@ export default function Welcome() {
                 </section>
 
                 {/* CTA */}
-                <section id="contact-cta" className="py-20 text-center px-6"
->
+                <section id="contact-cta" className="py-20 text-center px-6">
                     <h2 className="text-3xl font-bold text-gray-800">
-                        Ready to switch to green energy?
+                        Ready to switch to clean energy?
                     </h2>
 
                     <p className="mt-2 text-gray-600">
@@ -184,7 +178,7 @@ export default function Welcome() {
 
                     <Link
                         href="/contact"
-                        className="mt-6 inline-block px-8 py-4 bg-green-600 text-white rounded-xl hover:bg-green-700 transition"
+                        className="mt-6 inline-block px-8 py-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
                     >
                         Contact Higrotek
                     </Link>
