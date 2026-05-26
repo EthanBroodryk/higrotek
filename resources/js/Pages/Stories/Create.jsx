@@ -3,23 +3,40 @@ import { Head, useForm, Link } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function Create() {
+    // ✅ Form state configured to send an array of images to match StoryController@store
     const { data, setData, post, processing, errors, progress } = useForm({
         title: '',
         description: '',
-        media: null,
+        images: [], 
     });
 
-    const [preview, setPreview] = useState(null);
+    // Holds an array of base64 data URLs for rendering multi-image previews
+    const [previews, setPreviews] = useState([]);
 
-    const handleMediaChange = (e) => {
-        const file = e.target.files?.[0];
+    const handleImagesChange = (e) => {
+        const files = Array.from(e.target.files || []);
+        
+        if (files.length > 0) {
+            // Update the form tracking instance array
+            setData('images', files);
 
-        if (file) {
-            setData('media', file);
+            // Generate previews for all selected images dynamically
+            const previewUrls = [];
+            let loadedCount = 0;
 
-            const reader = new FileReader();
-            reader.onload = () => setPreview(reader.result);
-            reader.readAsDataURL(file);
+            files.forEach((file) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    previewUrls.push(reader.result);
+                    loadedCount++;
+                    
+                    // Once all images are loaded, update the state view safely
+                    if (loadedCount === files.length) {
+                        setPreviews(previewUrls);
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
         }
     };
 
@@ -68,12 +85,12 @@ export default function Create() {
                                 type="text"
                                 value={data.title}
                                 onChange={(e) => setData('title', e.target.value)}
-                                className="mt-1 w-full rounded-lg border p-2 text-sm"
+                                className="mt-1 w-full rounded-lg border p-2 text-sm focus:border-blue-500 focus:ring-blue-500"
                                 placeholder="Enter story title..."
                             />
 
                             {errors.title && (
-                                <p className="text-sm text-red-500">{errors.title}</p>
+                                <p className="text-sm text-red-500 mt-1">{errors.title}</p>
                             )}
                         </div>
 
@@ -86,32 +103,40 @@ export default function Create() {
                             <textarea
                                 value={data.description}
                                 onChange={(e) => setData('description', e.target.value)}
-                                className="mt-1 w-full rounded-lg border p-2 text-sm"
+                                className="mt-1 w-full rounded-lg border p-2 text-sm focus:border-blue-500 focus:ring-blue-500"
                                 rows="4"
                                 placeholder="Describe your work..."
                             />
 
                             {errors.description && (
-                                <p className="text-sm text-red-500">{errors.description}</p>
+                                <p className="text-sm text-red-500 mt-1">{errors.description}</p>
                             )}
                         </div>
 
-                        {/* MEDIA UPLOAD */}
+                        {/* MULTIPLE IMAGES UPLOAD */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700">
-                                Upload Image / Video
+                                Upload Story Images <span className="text-xs text-gray-400 font-normal">(First image chosen acts as the cover)</span>
                             </label>
 
                             <input
                                 type="file"
-                                accept="image/*,video/*"
-                                onChange={handleMediaChange}
-                                className="mt-1 w-full text-sm"
+                                accept="image/*"
+                                multiple // ✅ Allows selection of more than one image
+                                onChange={handleImagesChange}
+                                className="mt-1 w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
                             />
 
-                            {errors.media && (
-                                <p className="text-sm text-red-500">{errors.media}</p>
+                            {/* Catch top-level or structural nested image array validation errors */}
+                            {errors.images && (
+                                <p className="text-sm text-red-500 mt-1">{errors.images}</p>
                             )}
+                            {Object.keys(errors).map((key) => {
+                                if (key.startsWith('images.')) {
+                                    return <p key={key} className="text-sm text-red-500 mt-1">{errors[key]}</p>;
+                                }
+                                return null;
+                            })}
 
                             {progress && (
                                 <p className="mt-2 text-sm text-gray-500">
@@ -120,31 +145,34 @@ export default function Create() {
                             )}
                         </div>
 
-                        {/* PREVIEW */}
-                        {preview && (
-                            <div className="rounded-xl border bg-gray-50 p-3">
-                                <p className="text-sm font-medium text-gray-600 mb-2">
-                                    Preview
+                        {/* MULTI PREVIEW GRID */}
+                        {previews.length > 0 && (
+                            <div className="rounded-xl border bg-gray-50 p-4">
+                                <p className="text-sm font-medium text-gray-600 mb-3">
+                                    Selected Gallery Images ({previews.length})
                                 </p>
 
-                                {data.media?.type?.startsWith('video') ? (
-                                    <video
-                                        src={preview}
-                                        controls
-                                        className="h-64 w-full rounded-lg object-cover"
-                                    />
-                                ) : (
-                                    <img
-                                        src={preview}
-                                        className="h-64 w-full rounded-lg object-cover"
-                                        alt="Preview"
-                                    />
-                                )}
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                    {previews.map((url, idx) => (
+                                        <div key={idx} className="relative rounded-lg overflow-hidden border bg-white shadow-sm group">
+                                            <img
+                                                src={url}
+                                                className="h-32 w-full object-cover"
+                                                alt={`Preview snapshot ${idx + 1}`}
+                                            />
+                                            {idx === 0 && (
+                                                <span className="absolute top-2 left-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow">
+                                                    Cover Photo
+                                                </span>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         )}
 
                         {/* ACTIONS */}
-                        <div className="flex items-center justify-end gap-3">
+                        <div className="flex items-center justify-end gap-3 border-t pt-4">
                             <Link
                                 href={route('stories.index')}
                                 className="rounded-lg border px-4 py-2 text-sm text-gray-600 hover:bg-gray-50"
@@ -155,7 +183,7 @@ export default function Create() {
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="rounded-lg bg-green-600 px-5 py-2 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-50"
+                                className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition disabled:opacity-50"
                             >
                                 Publish Story
                             </button>

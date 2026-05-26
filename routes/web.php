@@ -10,6 +10,8 @@ use App\Http\Controllers\StoryController;
 
 
 
+Route::get('/', [StoryController::class, 'getStoriesHomePage'])->name('welcome');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/stories', [StoryController::class, 'index'])->name('stories.index');
     Route::get('/stories/create', [StoryController::class, 'create'])->name('stories.create');
@@ -19,22 +21,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/stories/{story}/edit', [StoryController::class, 'edit'])->name('stories.edit');
 });
 
-Route::get('/', function () {
-
-    $logo = CompanyLogo::where('is_active', true)->first();
-
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-
-        // ✅ ADD THIS
-        'logo' => $logo
-            ? asset('storage/' . $logo->path)
-            : null,
-    ]);
-});
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
