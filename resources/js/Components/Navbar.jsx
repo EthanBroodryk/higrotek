@@ -5,7 +5,11 @@ import { usePage } from "@inertiajs/react";
 export default function Navbar() {
     const [active, setActive] = useState("home");
     const [open, setOpen] = useState(false);
-    const { logo } = usePage().props;
+    
+    // ✅ Extract logo AND stories from Inertia page props
+    const { logo, stories = [] } = usePage().props;
+    const hasStories = stories.length > 0;
+
     return (
         <nav className="fixed top-0 left-0 w-full bg-white/80 backdrop-blur-lg shadow-sm z-50">
             <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -34,7 +38,7 @@ export default function Navbar() {
                 </button>
 
                 {/* DESKTOP MENU */}
-                <div className="hidden md:flex gap-8 text-gray-700 font-medium">
+                <div className="hidden md:flex gap-8 text-gray-700 font-medium items-center">
                     <button
                         onClick={() => {
                             setActive("home");
@@ -82,25 +86,42 @@ export default function Navbar() {
                     >
                         Services
                     </button>
-                    
-                    {/* CTA BUTTON (Desktop Trigger) */}
-                    <div className="hidden md:block">
+
+                    {/* ✅ DESKTOP PROJECTS SCROLL LINK (Only visible if database has stories) */}
+                    {hasStories && (
                         <button
                             onClick={() => {
-                                setActive("contact");
-                                document.getElementById("contact-cta")?.scrollIntoView({
+                                setActive("projects");
+                                document.getElementById("latest-stories")?.scrollIntoView({
                                     behavior: "smooth",
                                 });
                             }}
                             className={`transition ${
-                                active === "contact"
+                                active === "projects"
                                     ? "text-blue-700 font-semibold"
                                     : "text-gray-700 hover:text-blue-700"
                             }`}
                         >
-                            Contact
+                            Projects
                         </button>
-                    </div>
+                    )}
+                    
+                    {/* CTA BUTTON */}
+                    <button
+                        onClick={() => {
+                            setActive("contact");
+                            document.getElementById("contact-cta")?.scrollIntoView({
+                                behavior: "smooth",
+                            });
+                        }}
+                        className={`transition ${
+                            active === "contact"
+                                ? "text-blue-700 font-semibold"
+                                : "text-gray-700 hover:text-blue-700"
+                        }`}
+                    >
+                        Contact
+                    </button>
                 </div>
 
                 {/* MOBILE MENU BUTTON */}
@@ -123,12 +144,22 @@ export default function Navbar() {
             {/* MOBILE DROPDOWN */}
             {open && (
                 <div className="md:hidden bg-white shadow-sm border-t">
-                    <Link 
-                        href="/" 
-                        className="block px-6 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition"
+                    <button
+                        onClick={() => {
+                            setOpen(false);
+                            setActive("home");
+                            document.getElementById("hero")?.scrollIntoView({
+                                behavior: "smooth",
+                            });
+                        }}
+                        className={`block px-6 py-3 w-full text-left transition ${
+                            active === "home"
+                                ? "text-blue-700 font-semibold bg-blue-50"
+                                : "text-gray-700 hover:bg-blue-50 hover:text-blue-700"
+                        }`}
                     >
                         Home
-                    </Link>
+                    </button>
 
                     <button
                         onClick={() => {
@@ -138,7 +169,11 @@ export default function Navbar() {
                                 behavior: "smooth",
                             });
                         }}
-                        className="block px-6 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition w-full text-left"
+                        className={`block px-6 py-3 w-full text-left transition ${
+                            active === "about"
+                                ? "text-blue-700 font-semibold bg-blue-50"
+                                : "text-gray-700 hover:bg-blue-50 hover:text-blue-700"
+                        }`}
                     >
                         About
                     </button>
@@ -159,6 +194,26 @@ export default function Navbar() {
                     >
                         Services
                     </button>
+
+                    {/* ✅ MOBILE PROJECTS SCROLL LINK */}
+                    {hasStories && (
+                        <button
+                            onClick={() => {
+                                setOpen(false);
+                                setActive("projects");
+                                document.getElementById("latest-stories")?.scrollIntoView({
+                                    behavior: "smooth",
+                                });
+                            }}
+                            className={`block px-6 py-3 w-full text-left transition ${
+                                active === "projects"
+                                    ? "text-blue-700 font-semibold bg-blue-50"
+                                    : "text-gray-700 hover:bg-blue-50 hover:text-blue-700"
+                            }`}
+                        >
+                            Projects
+                        </button>
+                    )}
 
                     <button
                         onClick={() => {
