@@ -19,6 +19,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/stories/{story}', [StoryController::class, 'show'])->name('stories.show');
     Route::delete('/stories/{story}', [StoryController::class, 'destroy'])->name('stories.destroy');
     Route::get('/stories/{story}/edit', [StoryController::class, 'edit'])->name('stories.edit');
+    Route::patch('stories/{story}', [StoryController::class, 'update'])->name('stories.update');
 });
 
 
