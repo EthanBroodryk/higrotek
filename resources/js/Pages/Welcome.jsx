@@ -11,39 +11,39 @@ export default function Welcome() {
 
             <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white text-gray-800">
 
-                {/* HERO */}
-                <section id="hero" className="flex flex-col items-center justify-center text-center px-6 py-24">
-                    {logo ? (
-                        <img
-                            src={logo}
-                            alt="Higrotek Logo"
-                            className="h-48 sm:h-56 md:h-64 lg:h-72 w-auto mb-4"
-                        />
-                    ) : (
-                        <h1 className="text-5xl font-bold text-blue-700">
-                            Higrotek
-                        </h1>
-                    )}
-                    <p className="mt-4 text-xl max-w-2xl text-gray-600">
-                        Powering a cleaner future with smart, sustainable energy solutions.
-                    </p>
+             {/* HERO */}
+            <section id="hero" className="flex flex-col items-center justify-center text-center px-6 py-24">
+                {logo ? (
+                    <img
+                        src={logo}
+                        alt="Higrotek Logo"
+                        className="h-36 sm:h-56 md:h-64 lg:h-72 w-full max-w-xs sm:max-w-none object-contain mb-4"
+                    />
+                ) : (
+                    <h1 className="text-5xl font-bold text-blue-700">
+                        Higrotek
+                    </h1>
+                )}
+                <p className="mt-4 text-xl max-w-2xl text-gray-600">
+                    Powering a cleaner future with smart, sustainable energy solutions.
+                </p>
 
-                    <div className="mt-8 flex gap-4">
-                        <Link
-                            href="/contact"
-                            className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
-                        >
-                            Get a Quote
-                        </Link>
+                <div className="mt-8 flex gap-4">
+                    <Link
+                        href="/contact"
+                        className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+                    >
+                        Get a Quote
+                    </Link>
 
-                        <Link
-                            href="/about"
-                            className="px-6 py-3 border border-blue-600 text-blue-700 rounded-xl hover:bg-blue-50 transition"
-                        >
-                            Learn More
-                        </Link>
-                    </div>
-                </section>
+                    <Link
+                        href="/about"
+                        className="px-6 py-3 border border-blue-600 text-blue-700 rounded-xl hover:bg-blue-50 transition"
+                    >
+                        Learn More
+                    </Link>
+                </div>
+            </section>
 
                 {/* WHO WE ARE */}
                 <section id="who-we-are" className="max-w-6xl mx-auto px-6 py-16">
