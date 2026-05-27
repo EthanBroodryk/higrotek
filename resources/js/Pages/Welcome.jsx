@@ -1,39 +1,67 @@
 import { useRef, useState, useEffect } from 'react';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link, usePage, useForm } from '@inertiajs/react';
 import Navbar from "@/Components/Navbar";
 
 export default function Welcome() {
-    // ✅ Destructured stories alongside the company logo from Inertia props
+    // Destructured stories alongside the company logo from Inertia props
     const { logo, stories = [] } = usePage().props;
     const hasStories = stories.length > 0;
+
+    // --- CONTACT DRAWER COMPONENT HOOK MANAGEMENT ---
+    const [isContactOpen, setIsContactOpen] = useState(false);
+    const [isRendered, setIsRendered] = useState(false);
+
+    // Inertia form submission hook tracking contact data properties
+    const { data, setData, post, processing, errors, reset, wasSuccessful } = useForm({
+        name: '',
+        email: '',
+        company: '',
+        phone: '',
+        message: '',
+    });
+
+    // Control mounting lifecycle delays to trigger transition frames correctly
+    const openContactDrawer = () => {
+        setIsRendered(true);
+        setTimeout(() => setIsContactOpen(true), 10);
+    };
+
+    const closeContactDrawer = () => {
+        setIsContactOpen(false);
+        setTimeout(() => setIsRendered(false), 350); // Matches sliding transition durations
+    };
+
+    const handleContactSubmit = (e) => {
+        e.preventDefault();
+        post(route('contact.submit'), {
+            onSuccess: () => {
+                reset();
+                setTimeout(() => closeContactDrawer(), 2000);
+            }
+        });
+    };
 
     // --- CAROUSEL SCROLL STATE & AUTOPLAY MANAGEMENT ---
     const scrollContainerRef = useRef(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(true);
-    const [isPaused, setIsPaused] = useState(false); // ✅ Added missing state hook variable
+    const [isPaused, setIsPaused] = useState(false);
 
     const checkScrollBounds = () => {
         if (scrollContainerRef.current) {
             const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
             setCanScrollLeft(scrollLeft > 5);
-            // Give a 5px buffer for rounding variances on high-density displays
             setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 5);
         }
     };
 
-    // Handle Scroll Listeners, Resize Bounds, and Hover Interactivity
     useEffect(() => {
         const container = scrollContainerRef.current;
         if (container) {
             container.addEventListener('scroll', checkScrollBounds);
-            // Initial run to determine if content overflows window view width
             checkScrollBounds();
-            
-            // Re-verify bounds if user shifts layout size
             window.addEventListener('resize', checkScrollBounds);
 
-            // Pause autoplay when user hovers or touches carousel
             const pauseAction = () => setIsPaused(true);
             const resumeAction = () => setIsPaused(false);
 
@@ -53,11 +81,9 @@ export default function Welcome() {
         }
     }, [stories]);
 
-    // Manual slide control handler trigger
     const scroll = (direction) => {
         if (scrollContainerRef.current) {
             const { clientWidth } = scrollContainerRef.current;
-            // Slides horizontally by approximately 75% of container viewport panel widths
             const scrollAmount = direction === 'left' ? -clientWidth * 0.75 : clientWidth * 0.75;
             scrollContainerRef.current.scrollBy({
                 left: scrollAmount,
@@ -66,7 +92,6 @@ export default function Welcome() {
         }
     };
 
-    // Autoplay Timer Loop Effect
     useEffect(() => {
         if (stories.length <= 1 || isPaused) return;
 
@@ -74,21 +99,19 @@ export default function Welcome() {
             if (scrollContainerRef.current) {
                 const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
                 
-                // If we are at the end, roll back smoothly to the beginning
                 if (scrollLeft + clientWidth >= scrollWidth - 10) {
                     scrollContainerRef.current.scrollTo({
                         left: 0,
                         behavior: 'smooth'
                     });
                 } else {
-                    // Otherwise, slide right by one card view cluster
                     scrollContainerRef.current.scrollBy({
                         left: clientWidth * 0.75,
                         behavior: 'smooth'
                     });
                 }
             }
-        }, 5000); // 5000ms = 5 seconds autoplay intervals
+        }, 5000);
 
         return () => clearInterval(interval);
     }, [stories, isPaused, canScrollRight]);
@@ -98,7 +121,7 @@ export default function Welcome() {
             <Navbar />
             <Head title="Higrotek - Blue Energy Solutions" />
 
-            <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white text-gray-800 pt-16">
+            <div className={`min-h-screen bg-gradient-to-b from-blue-50 to-white text-gray-800 pt-16 transition-all duration-300 ${isContactOpen ? 'blur-[2px] pointer-events-none select-none scale-[0.99]' : ''}`}>
 
                 {/* HERO */}
                 <section id="hero" className="scroll-mt-24 flex flex-col items-center justify-center text-center px-6 py-24">
@@ -118,12 +141,13 @@ export default function Welcome() {
                     </p>
 
                     <div className="mt-8 flex gap-4">
-                        <Link
-                            href="/contact"
-                            className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+                        {/* ✅ UPGRADED CONTACT TRIGGER TO LAUNCH MODAL */}
+                        <button
+                            onClick={openContactDrawer}
+                            className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-md hover:shadow-lg transition"
                         >
                             Get a Quote
-                        </Link>
+                        </button>
 
                         <button
                             onClick={() => document.getElementById("who-we-are")?.scrollIntoView({ behavior: "smooth" })}
@@ -249,11 +273,9 @@ export default function Welcome() {
                     </div>
                 </section>
 
-                {/* DYNAMIC HORIZONTAL SWIPEABLE PROJECTS CAROUSEL SECTION */}
+                {/* DYNAMIC PROJECTS CAROUSEL SECTION */}
                 {hasStories && (
                     <section id="latest-stories" className="scroll-mt-24 max-w-6xl mx-auto px-6 py-20 overflow-hidden">
-                        
-                        {/* CAROUSEL HEADER PANEL */}
                         <div className="mb-10">
                             <h2 className="text-3xl font-bold text-blue-700">
                                 Latest Projects & Updates
@@ -263,19 +285,14 @@ export default function Welcome() {
                             </p>
                         </div>
 
-                        {/* CAROUSEL TRACK WRAPPER WITH SIDE CONTROLS */}
                         <div className="relative group/carousel-container">
-                            
-                            {/* LEFT ARROW (Vertically Centered) */}
                             {stories.length > 1 && (
                                 <button
                                     onClick={() => scroll('left')}
                                     disabled={!canScrollLeft}
                                     aria-label="Scroll left"
                                     className={`absolute left-2 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full border transition-all duration-200 flex items-center justify-center bg-white shadow-md ${
-                                        canScrollLeft
-                                            ? 'border-gray-200 text-gray-700 hover:bg-blue-50 hover:text-blue-700 scale-100 opacity-100 md:opacity-0 md:group-hover/carousel-container:opacity-100'
-                                            : 'border-gray-100 text-gray-300 cursor-not-allowed opacity-40'
+                                        canScrollLeft ? 'border-gray-200 text-gray-700 hover:bg-blue-50 hover:text-blue-700 scale-100 opacity-100 md:opacity-0 md:group-hover/carousel-container:opacity-100' : 'border-gray-100 text-gray-300 cursor-not-allowed opacity-40'
                                     }`}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -284,16 +301,13 @@ export default function Welcome() {
                                 </button>
                             )}
 
-                            {/* RIGHT ARROW (Vertically Centered) */}
                             {stories.length > 1 && (
                                 <button
                                     onClick={() => scroll('right')}
                                     disabled={!canScrollRight}
                                     aria-label="Scroll right"
                                     className={`absolute right-2 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full border transition-all duration-200 flex items-center justify-center bg-white shadow-md ${
-                                        canScrollRight
-                                            ? 'border-gray-200 text-gray-700 hover:bg-blue-50 hover:text-blue-700 scale-100 opacity-100 md:opacity-0 md:group-hover/carousel-container:opacity-100'
-                                            : 'border-gray-100 text-gray-300 cursor-not-allowed opacity-40'
+                                        canScrollRight ? 'border-gray-200 text-gray-700 hover:bg-blue-50 hover:text-blue-700 scale-100 opacity-100 md:opacity-0 md:group-hover/carousel-container:opacity-100' : 'border-gray-100 text-gray-300 cursor-not-allowed opacity-40'
                                     }`}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -302,7 +316,6 @@ export default function Welcome() {
                                 </button>
                             )}
 
-                            {/* HORIZONTAL CONTAINER TRACK */}
                             <div
                                 ref={scrollContainerRef}
                                 className="flex gap-6 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-6 -mx-4 px-4 scroll-smooth"
@@ -313,59 +326,27 @@ export default function Welcome() {
                                     const remainingCount = story.images?.length || 0;
 
                                     return (
-                                        <div
-                                            key={story.id}
-                                            className="w-[85vw] sm:w-[45vw] lg:w-[31%] shrink-0 snap-start group overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition duration-300 flex flex-col justify-between"
-                                        >
+                                        <div key={story.id} className="w-[85vw] sm:w-[45vw] lg:w-[31%] shrink-0 snap-start group overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition duration-300 flex flex-col justify-between">
                                             <div>
-                                                {/* PROJECT IMAGE HEADER */}
                                                 <div className="relative h-52 w-full bg-gray-100 overflow-hidden">
                                                     {mainImage ? (
-                                                        <img
-                                                            src={`/storage/${mainImage}`}
-                                                            alt={story.title}
-                                                            className="h-full w-full object-cover transition duration-500 group-hover:scale-102"
-                                                        />
+                                                        <img src={`/storage/${mainImage}`} alt={story.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-102" />
                                                     ) : (
-                                                        <div className="flex h-full items-center justify-center text-sm text-gray-400 font-medium bg-gray-50">
-                                                            Higrotek Energy Project
-                                                        </div>
+                                                        <div className="flex h-full items-center justify-center text-sm text-gray-400 font-medium bg-gray-50">Higrotek Energy Project</div>
                                                     )}
-
-                                                    {/* EXTRA GALLERIES IMAGE BADGE */}
                                                     {remainingCount > 1 && (
-                                                        <span className="absolute bottom-3 right-3 bg-blue-600/90 backdrop-blur-sm text-white text-[11px] font-semibold px-2 py-1 rounded-md shadow-sm">
-                                                            +{remainingCount - 1} More Photos
-                                                        </span>
+                                                        <span className="absolute bottom-3 right-3 bg-blue-600/90 backdrop-blur-sm text-white text-[11px] font-semibold px-2 py-1 rounded-md shadow-sm">+{remainingCount - 1} More Photos</span>
                                                     )}
                                                 </div>
-
-                                                {/* BODY DETAILS */}
                                                 <div className="p-5">
-                                                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-700 transition duration-200 line-clamp-1">
-                                                        {story.title}
-                                                    </h3>
-                                                    
-                                                    {story.description && (
-                                                        <p className="mt-2 line-clamp-3 text-sm text-gray-600 leading-relaxed">
-                                                            {story.description}
-                                                        </p>
-                                                    )}
+                                                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-700 transition duration-200 line-clamp-1">{story.title}</h3>
+                                                    {story.description && <p className="mt-2 line-clamp-3 text-sm text-gray-600 leading-relaxed">{story.description}</p>}
                                                 </div>
                                             </div>
-
-                                       {/* VIEW ATTACHED STORY FOOTER LINK */}
                                             <div className="px-5 pb-5 pt-3 border-t border-gray-50 flex items-center justify-between text-xs text-gray-400">
-                                                <span>
-                                                    By {story.user?.name ?? 'Higrotek Team'}
-                                                </span>
-
-                                                <Link
-                                                    href={route('stories.show.client', story.id)}
-                                                    className="text-blue-600 font-bold hover:text-blue-800 flex items-center gap-1 group/link"
-                                                >
-                                                    Read Full Story 
-                                                    <span className="transition-transform group-hover/link:translate-x-0.5">→</span>
+                                                <span>By {story.user?.name ?? 'Higrotek Team'}</span>
+                                                <Link href={route('stories.show.client', story.id)} className="text-blue-600 font-bold hover:text-blue-800 flex items-center gap-1 group/link">
+                                                    Read Full Story <span className="transition-transform group-hover/link:translate-x-0.5">→</span>
                                                 </Link>
                                             </div>
                                         </div>
@@ -373,45 +354,154 @@ export default function Welcome() {
                                 })}
                             </div>
                         </div>
-
-                        {/* Inline styles helper to completely hide scroll bars across browsers */}
-                        <style dangerouslySetInnerHTML={{__html: `
-                            .no-scrollbar::-webkit-scrollbar {
-                                display: none;
-                            }
-                            .no-scrollbar {
-                                -ms-overflow-style: none;
-                                scrollbar-width: none;
-                            }
-                        `}} />
+                        <style dangerouslySetInnerHTML={{__html: `.no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}} />
                     </section>
                 )}
-                    
 
                 {/* CTA */}
                 <section id="contact-cta" className="scroll-mt-24 py-20 text-center px-6">
                     <h2 className="text-3xl font-bold text-gray-800">
                         Ready to switch to clean energy?
                     </h2>
-
                     <p className="mt-2 text-gray-600">
                         Let’s design a sustainable energy solution for your business.
                     </p>
-
-                    <Link
-                        href="/contact"
-                        className="mt-6 inline-block px-8 py-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+                    {/* ✅ UPGRADED BOTTOM CALL TO ACTION BUTTON */}
+                    <button
+                        onClick={openContactDrawer}
+                        className="mt-6 inline-block px-8 py-4 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 shadow-md hover:shadow-lg transition cursor-pointer"
                     >
                         Contact Higrotek
-                    </Link>
+                    </button>
                 </section>
 
                 {/* FOOTER */}
                 <footer className="py-10 text-center text-sm text-gray-500">
                     © {new Date().getFullYear()} Higrotek Renewable Energy. All rights reserved.
                 </footer>
-
             </div>
+
+            {/* --- SLIDING CONTACT MODAL PANEL DRAWER LAYER --- */}
+            {isRendered && (
+                <div className="fixed inset-0 z-50 overflow-hidden">
+                    {/* Backdrop Tint Panel overlay layer */}
+                    <div 
+                        className={`absolute inset-0 bg-gray-900/40 backdrop-blur-xs transition-opacity duration-300 ${isContactOpen ? 'opacity-100' : 'opacity-0'}`}
+                        onClick={closeContactDrawer} 
+                    />
+
+                    {/* Sliding Box Body Panel */}
+                    <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
+                        <div className={`w-screen max-w-md bg-white shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out ${isContactOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                            
+                            {/* Drawer Shell Top Header panel */}
+                            <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50">
+                                <div>
+                                    <h3 className="text-xl font-bold text-gray-900">Get in Touch</h3>
+                                    <p className="text-xs text-gray-500 mt-0.5">Let's discuss your custom solar project requirements.</p>
+                                </div>
+                                <button 
+                                    onClick={closeContactDrawer}
+                                    className="p-2 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-200 transition"
+                                >
+                                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            {/* Contact Interactive Core Container Form Body */}
+                            <div className="flex-1 overflow-y-auto p-6">
+                                {wasSuccessful ? (
+                                    <div className="h-full flex flex-col items-center justify-center text-center px-4">
+                                        <div className="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-4 animate-bounce">
+                                            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        </div>
+                                        <h4 className="text-xl font-bold text-gray-900">Message Received!</h4>
+                                        <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+                                            Thank you for reaching out. The Higrotek technical design engineering team will review your parameters and respond shortly.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <form onSubmit={handleContactSubmit} className="space-y-4">
+                                        <div>
+                                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Full Name *</label>
+                                            <input 
+                                                type="text" required
+                                                value={data.name} onChange={e => setData('name', e.target.value)}
+                                                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition"
+                                                placeholder="e.g. Pieter Brand"
+                                            />
+                                            {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Email Address *</label>
+                                            <input 
+                                                type="email" required
+                                                value={data.email} onChange={e => setData('email', e.target.value)}
+                                                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition"
+                                                placeholder="name@company.co.za"
+                                            />
+                                            {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Company / Organization</label>
+                                            <input 
+                                                type="text"
+                                                value={data.company} onChange={e => setData('company', e.target.value)}
+                                                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition"
+                                                placeholder="Company Name Pty Ltd"
+                                            />
+                                            {errors.company && <p className="text-xs text-red-500 mt-1">{errors.company}</p>}
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Contact Number</label>
+                                            <input 
+                                                type="tel"
+                                                value={data.phone} onChange={e => setData('phone', e.target.value)}
+                                                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition"
+                                                placeholder="e.g. +27 11 123 4567"
+                                            />
+                                            {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone}</p>}
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Project Details / Message *</label>
+                                            <textarea 
+                                                rows="4" required
+                                                value={data.message} onChange={e => setData('message', e.target.value)}
+                                                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition resize-none"
+                                                placeholder="Provide summary scope (e.g. 150kW commercial solar installation, carport racking, grid-tied battery storage, etc.)..."
+                                            />
+                                            {errors.message && <p className="text-xs text-red-500 mt-1">{errors.message}</p>}
+                                        </div>
+
+                                        <button 
+                                            type="submit" disabled={processing}
+                                            className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl tracking-wide shadow-md transition disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
+                                        >
+                                            {processing ? (
+                                                <>
+                                                    <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                                    </svg>
+                                                    Transmitting Details...
+                                                </>
+                                            ) : 'Submit Request'}
+                                        </button>
+                                    </form>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 }
