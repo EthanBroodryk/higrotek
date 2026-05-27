@@ -11,6 +11,7 @@ use App\Http\Controllers\StoryController;
 
 
 Route::get('/', [StoryController::class, 'getStoriesHomePage'])->name('welcome');
+Route::get('/projects/{story}', [StoryController::class, 'showClientStory'])->name('stories.show.client');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/stories', [StoryController::class, 'index'])->name('stories.index');

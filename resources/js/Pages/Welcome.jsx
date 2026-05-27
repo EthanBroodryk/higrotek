@@ -354,14 +354,14 @@ export default function Welcome() {
                                                 </div>
                                             </div>
 
-                                            {/* VIEW ATTACHED STORY FOOTER LINK */}
+                                       {/* VIEW ATTACHED STORY FOOTER LINK */}
                                             <div className="px-5 pb-5 pt-3 border-t border-gray-50 flex items-center justify-between text-xs text-gray-400">
                                                 <span>
                                                     By {story.user?.name ?? 'Higrotek Team'}
                                                 </span>
 
                                                 <Link
-                                                    href={route('stories.show', story.id)}
+                                                    href={route('stories.show.client', story.id)}
                                                     className="text-blue-600 font-bold hover:text-blue-800 flex items-center gap-1 group/link"
                                                 >
                                                     Read Full Story 

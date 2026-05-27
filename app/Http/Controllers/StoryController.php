@@ -150,4 +150,24 @@ class StoryController extends Controller
 
         return redirect()->route('stories.index')->with('success', 'Story updated successfully.');
     }
+
+
+  
+    public function showClientStory(Story $story)
+    {
+        
+        $story->load(['images', 'coverImage', 'user']);
+        
+    
+        $logo = CompanyLogo::where('is_active', true)->first();
+
+        return Inertia::render('Stories/ClientShow', [
+            'story' => $story,
+            'logo'  => $logo ? asset('storage/' . $logo->path) : null,
+        ]);
+    }
+
+
+
+
 }
