@@ -42,7 +42,6 @@ class StoryController extends Controller
 
     public function store(Request $request)
     {
-        
         $validated = $request->validate([
             'title'       => 'required|string|max:255',
             'description' => 'required|string',
@@ -80,7 +79,6 @@ class StoryController extends Controller
         ]);
     }
 
-    
     public function edit(Story $story)
     {
         $story->load(['images', 'coverImage']);
@@ -90,25 +88,22 @@ class StoryController extends Controller
         ]);
     }
 
-    
     public function update(Request $request, Story $story)
     {
         $validated = $request->validate([
             'title'          => 'required|string|max:255',
             'description'    => 'required|string',
-            'cover_image_id' => 'required|numeric', // Id track of current/assigned cover
+            'cover_image_id' => 'required|numeric',
             'delete_images'  => 'nullable|array',
             'delete_images.*'=> 'numeric',
             'new_images'     => 'nullable|array',
             'new_images.*'   => 'image|max:2048',
         ]);
 
-        
         $story->update([
             'title'       => $validated['title'],
             'description' => $validated['description'],
         ]);
-
 
         if (!empty($request->delete_images)) {
             $imagesToDelete = StoryImage::whereIn('id', $request->delete_images)
@@ -121,7 +116,6 @@ class StoryController extends Controller
             }
         }
 
-      
         if ($request->hasFile('new_images')) {
             foreach ($request->file('new_images') as $file) {
                 $path = $file->store('stories', 'public');
@@ -132,16 +126,13 @@ class StoryController extends Controller
             }
         }
 
-  
         StoryImage::where('story_id', $story->id)->update(['is_cover' => false]);
-        
         
         $targetCover = StoryImage::where('story_id', $story->id)->where('id', $validated['cover_image_id'])->first();
         
         if ($targetCover) {
             $targetCover->update(['is_cover' => true]);
         } else {
-            
             $fallback = StoryImage::where('story_id', $story->id)->first();
             if ($fallback) {
                 $fallback->update(['is_cover' => true]);
@@ -151,14 +142,9 @@ class StoryController extends Controller
         return redirect()->route('stories.index')->with('success', 'Story updated successfully.');
     }
 
-
-  
     public function showClientStory(Story $story)
     {
-        
         $story->load(['images', 'coverImage', 'user']);
-        
-    
         $logo = CompanyLogo::where('is_active', true)->first();
 
         return Inertia::render('Stories/ClientShow', [
@@ -167,7 +153,23 @@ class StoryController extends Controller
         ]);
     }
 
+    // ✅ ADDED DESTRUCTION METHOD WITH FILE SYSTEM PURGING
+    public function destroy(Story $story)
+    {
+        // 1. Fetch all associated graphics linked to this story sequence
+        $images = $story->images;
 
+        // 2. Erase each absolute physical file out of the public storage directory
+        foreach ($images as $image) {
+            if (Storage::disk('public')->exists($image->path)) {
+                Storage::disk('public')->delete($image->path);
+            }
+        }
 
+        // 3. Delete the parent story entry (cascade constraints will drop the image rows automatically)
+        $story->delete();
 
+        // 4. Send admin back to the index tracking deck
+        return redirect()->route('stories.index')->with('success', 'Project update and files purged successfully.');
+    }
 }
