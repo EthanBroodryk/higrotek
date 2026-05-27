@@ -4,9 +4,12 @@ import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 
 export default function Login({ status, canResetPassword }) {
+    // ✅ Extract the uploaded brand logo safely from global Inertia shared page props
+    const { logo } = usePage().props;
+
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
         password: '',
@@ -24,6 +27,26 @@ export default function Login({ status, canResetPassword }) {
     return (
         <GuestLayout>
             <Head title="Log in" />
+
+            {/* ✅ DYNAMIC BRAND LOGO HEADER INTEGRATION */}
+            <div className="flex flex-col items-center justify-center text-center mb-8">
+                {logo ? (
+                    <Link href="/">
+                        <img
+                            src={logo}
+                            alt="Higrotek Brand Logo"
+                            className="h-16 md:h-20 w-auto object-contain hover:opacity-90 transition duration-200"
+                        />
+                    </Link>
+                ) : (
+                    <Link href="/" className="text-3xl font-extrabold text-blue-700 tracking-tight">
+                        Higrotek
+                    </Link>
+                )}
+                <p className="mt-2 text-xs text-gray-400 font-medium">
+                    Management Portal Authentication
+                </p>
+            </div>
 
             {status && (
                 <div className="mb-4 text-sm font-medium text-green-600">
@@ -80,17 +103,19 @@ export default function Login({ status, canResetPassword }) {
                     </label>
                 </div>
 
-                <div className="mt-4 flex items-center justify-end">
-                    {canResetPassword && (
+                <div className="mt-6 flex items-center justify-between border-t border-gray-100 pt-4">
+                    {canResetPassword ? (
                         <Link
                             href={route('password.request')}
-                            className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            className="rounded-md text-xs text-gray-400 underline hover:text-gray-600 focus:outline-none"
                         >
-                            Forgot your password?
+                            Forgot password?
                         </Link>
+                    ) : (
+                        <div />
                     )}
 
-                    <PrimaryButton className="ms-4" disabled={processing}>
+                    <PrimaryButton className="ms-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800" disabled={processing}>
                         Log in
                     </PrimaryButton>
                 </div>
