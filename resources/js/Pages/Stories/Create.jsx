@@ -3,34 +3,39 @@ import { Head, useForm, Link } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function Create() {
-    // ✅ Form state configured to send an array of images to match StoryController@store
+    
     const { data, setData, post, processing, errors, progress } = useForm({
         title: '',
         description: '',
         images: [], 
+        cover_index: 0,
     });
 
-    // Holds an array of base64 data URLs for rendering multi-image previews
+    
     const [previews, setPreviews] = useState([]);
+    const [coverIndex, setCoverIndex] = useState(0);
 
     const handleImagesChange = (e) => {
         const files = Array.from(e.target.files || []);
         
         if (files.length > 0) {
-            // Update the form tracking instance array
             setData('images', files);
+            
+            // Reset the cover choice to index 0 on fresh upload resets
+            setCoverIndex(0);
+            setData('cover_index', 0);
 
-            // Generate previews for all selected images dynamically
-            const previewUrls = [];
+            // Pre-allocate array slots to preserve identical index ordering
+            const previewUrls = new Array(files.length);
             let loadedCount = 0;
 
-            files.forEach((file) => {
+            files.forEach((file, index) => {
                 const reader = new FileReader();
                 reader.onload = () => {
-                    previewUrls.push(reader.result);
+                    // Assign to the strict array slot position matching native files array
+                    previewUrls[index] = reader.result;
                     loadedCount++;
                     
-                    // Once all images are loaded, update the state view safely
                     if (loadedCount === files.length) {
                         setPreviews(previewUrls);
                     }
@@ -39,7 +44,6 @@ export default function Create() {
             });
         }
     };
-
     const submit = (e) => {
         e.preventDefault();
 
@@ -145,24 +149,32 @@ export default function Create() {
                             )}
                         </div>
 
-                        {/* MULTI PREVIEW GRID */}
+                    
+                        {/* PREVIEW IMAGES + SELECT COVER */}
                         {previews.length > 0 && (
-                            <div className="rounded-xl border bg-gray-50 p-4">
-                                <p className="text-sm font-medium text-gray-600 mb-3">
-                                    Selected Gallery Images ({previews.length})
-                                </p>
+                            <div className="space-y-2">
+                                <p className="text-sm text-gray-600 font-medium">Select Cover Photo</p>
 
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                                    {previews.map((url, idx) => (
-                                        <div key={idx} className="relative rounded-lg overflow-hidden border bg-white shadow-sm group">
+                                <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
+                                    {previews.map((src, index) => (
+                                        <div
+                                            key={index}
+                                            onClick={() => {
+                                                setCoverIndex(index);
+                                                setData("cover_index", index); // send to backend
+                                            }}
+                                            className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition 
+                                                ${coverIndex === index ? "border-blue-500" : "border-transparent hover:border-gray-300"}
+                                            `}
+                                        >
                                             <img
-                                                src={url}
-                                                className="h-32 w-full object-cover"
-                                                alt={`Preview snapshot ${idx + 1}`}
+                                                src={src}
+                                                className="h-28 w-full object-cover"
                                             />
-                                            {idx === 0 && (
-                                                <span className="absolute top-2 left-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow">
-                                                    Cover Photo
+
+                                            {coverIndex === index && (
+                                                <span className="absolute bottom-1 left-1 bg-blue-500 text-white text-xs px-2 py-0.5 rounded">
+                                                    Cover
                                                 </span>
                                             )}
                                         </div>

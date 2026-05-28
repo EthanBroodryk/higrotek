@@ -40,13 +40,15 @@ class StoryController extends Controller
         return Inertia::render('Stories/Create');
     }
 
-    public function store(Request $request)
+  public function store(Request $request)
     {
+        // 1. Add cover_index to validation
         $validated = $request->validate([
             'title'       => 'required|string|max:255',
             'description' => 'required|string',
             'images'      => 'nullable|array',
             'images.*'    => 'image|max:2048',
+            'cover_index' => 'required|integer|min:0', // Ensure it's a valid number index
         ]);
 
         $story = Story::create([
@@ -57,12 +59,16 @@ class StoryController extends Controller
         ]);
 
         if ($request->hasFile('images')) {
+            // Read the user-selected cover index from the request payload
+            $chosenCoverIndex = (int) $request->input('cover_index', 0);
+        
             foreach ($request->file('images') as $index => $file) {
                 $path = $file->store('stories', 'public');
 
                 $story->images()->create([
                     'path'     => $path,
-                    'is_cover' => $index === 0, 
+                    // Match the current file loop index against the user's selected index
+                    'is_cover' => $index === $chosenCoverIndex, 
                 ]);
             }
         }
@@ -153,7 +159,7 @@ class StoryController extends Controller
         ]);
     }
 
-    // ✅ ADDED DESTRUCTION METHOD WITH FILE SYSTEM PURGING
+    
     public function destroy(Story $story)
     {
         // 1. Fetch all associated graphics linked to this story sequence
