@@ -90,6 +90,20 @@ export default function Navbar() {
                         Services
                     </button>
 
+                    <button
+                        onClick={() => {
+                            setActive("leadership");
+                            scrollToSection("leadership");
+                        }}
+                        className={`transition ${
+                            active === "services"
+                                ? "text-blue-700 font-semibold"
+                                : "text-gray-700 hover:text-blue-700"
+                        }`}
+                    >
+                        Team
+                    </button>
+
                     {/* DESKTOP PROJECTS LINK */}
                     {hasStories && (
                         <button
@@ -195,6 +209,23 @@ export default function Navbar() {
                         }`}
                     >
                         Services
+                    </button>
+
+
+
+                    <button
+                        onClick={() => {
+                            setOpen(false);
+                            setActive("leadership");
+                            scrollToSection("leadership");
+                        }}
+                        className={`block px-6 py-3 w-full text-left transition ${
+                            active === "services"
+                                ? "text-blue-700 font-semibold bg-blue-50"
+                                : "text-gray-700 hover:bg-blue-50"
+                        }`}
+                    >
+                        Team
                     </button>
 
                     {/* MOBILE PROJECTS LINK */}

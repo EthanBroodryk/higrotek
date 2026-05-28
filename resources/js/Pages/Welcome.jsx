@@ -320,7 +320,7 @@ export default function Welcome() {
                 </section>
 
                 {/* LEADERSHIP */}
-                <section className="bg-blue-50 py-20 px-6">
+                <section id="leadership" className="bg-blue-50 py-20 px-6">
                     <div className="max-w-6xl mx-auto">
                         <h2 className="text-3xl font-bold text-blue-700 mb-10">
                             Leadership Team
