@@ -150,51 +150,45 @@ export default function Edit({ story }) {
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 border bg-gray-50/50 p-4 rounded-xl">
                                 
                                 {/* Existing Database Files */}
-                                {story.images && story.images.map((img) => {
-                                    const isMarkedDeleted = data.delete_images.includes(img.id);
-                                    const isCurrentCover = !data.is_new_cover && data.cover_image_id === img.id;
+                                {story.images && story.images
+                                    // This line filters out images marked for deletion so they visually disappear
+                                    .filter((img) => !data.delete_images.includes(img.id))
+                                    .map((img) => {
+                                        const isCurrentCover = !data.is_new_cover && data.cover_image_id === img.id;
 
-                                    return (
-                                        <div 
-                                            key={img.id} 
-                                            className={`relative rounded-lg overflow-hidden border bg-white flex flex-col justify-between transition ${
-                                                isMarkedDeleted ? 'opacity-40 border-red-300' : 'border-gray-200'
-                                            }`}
-                                        >
-                                            <img src={`/storage/${img.path}`} className="h-24 w-full object-cover" alt="Gallery item" />
-                                            
-                                            <div className="absolute top-1 right-1 flex flex-col gap-1">
-                                                {isCurrentCover && !isMarkedDeleted && (
-                                                    <span className="bg-blue-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">Cover</span>
-                                                )}
-                                                {isMarkedDeleted && (
-                                                    <span className="bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">Deleting</span>
-                                                )}
-                                            </div>
+                                        return (
+                                            <div 
+                                                key={img.id} 
+                                                className="relative rounded-lg overflow-hidden border bg-white flex flex-col justify-between border-gray-200"
+                                            >
+                                                <img src={`/storage/${img.path}`} className="h-24 w-full object-cover" alt="Gallery item" />
+                                                
+                                                <div className="absolute top-1 right-1 flex flex-col gap-1">
+                                                    {isCurrentCover && (
+                                                        <span className="bg-blue-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">Cover</span>
+                                                    )}
+                                                </div>
 
-                                            <div className="p-1.5 border-t bg-gray-50 flex items-center justify-between text-[11px] font-medium gap-1">
-                                                <button
-                                                    type="button"
-                                                    disabled={isMarkedDeleted}
-                                                    onClick={() => selectExistingAsCover(img.id)}
-                                                    className={`px-1.5 py-0.5 rounded transition ${
-                                                        isCurrentCover ? 'text-blue-700 font-bold bg-blue-50' : 'text-gray-500 hover:bg-gray-200 disabled:opacity-20'
-                                                    }`}
-                                                >
-                                                    Set Cover
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => toggleDeleteImage(img.id)}
-                                                    className={`px-1.5 py-0.5 rounded transition ${
-                                                        isMarkedDeleted ? 'text-green-700 bg-green-50' : 'text-red-600 hover:bg-red-50'
-                                                    }`}
-                                                >
-                                                    {isMarkedDeleted ? 'Keep' : 'Remove'}
-                                                </button>
+                                                <div className="p-1.5 border-t bg-gray-50 flex items-center justify-between text-[11px] font-medium gap-1">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => selectExistingAsCover(img.id)}
+                                                        className={`px-1.5 py-0.5 rounded transition ${
+                                                            isCurrentCover ? 'text-blue-700 font-bold bg-blue-50' : 'text-gray-500 hover:bg-gray-200'
+                                                        }`}
+                                                    >
+                                                        Set Cover
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => toggleDeleteImage(img.id)}
+                                                        className="px-1.5 py-0.5 rounded transition text-red-600 hover:bg-red-50"
+                                                    >
+                                                        Remove
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </div>
-                                    );
+                                        );
                                 })}
 
                                 {/* Newly Selected Local Images */}
