@@ -1,44 +1,38 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm, Link } from '@inertiajs/react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 export default function Edit({ story }) {
-    // Determine the current active cover image database ID
     const initialCoverId = story.cover_image?.id || story.images?.[0]?.id || 0;
 
-    // Inertia form layout instance
     const { data, setData, post, processing, errors, progress } = useForm({
-        _method: 'PATCH', // Spoofing PATCH method to allow multipart form uploads over Laravel
+        _method: 'PATCH',             // ✅ Spoofs PATCH method internally over a POST request pipeline
         title: story.title,
         description: story.description,
         cover_image_id: initialCoverId,
-        delete_images: [], // tracks IDs of old photos marked to be purged
-        new_images: [],    // tracks actual File objects for appending
+        is_new_cover: false,          // Tracks if chosen cover is a new upload
+        new_cover_name: '',           // Tracks file name if cover is a new upload
+        delete_images: [], 
+        new_images: [],    
     });
 
-    // Holds previews for brand new additional file choices
     const [newPreviews, setNewPreviews] = useState([]);
 
-    // Watcher: handles fallback cover shifting inside data tracking if active selection gets deleted
-    useEffect(() => {
-        const structuralImages = story.images.filter(img => !data.delete_images.includes(img.id));
-        if (structuralImages.length > 0 && !structuralImages.some(img => img.id === data.cover_image_id)) {
-            setData('cover_image_id', structuralImages[0].id);
-        }
-    }, [data.delete_images]);
-
-    // Handle incoming selection of supplementary photos
     const handleNewImagesChange = (e) => {
         const files = Array.from(e.target.files || []);
         if (files.length > 0) {
             setData('new_images', files);
 
-            const previewUrls = [];
+            const previewUrls = new Array(files.length);
             let loaded = 0;
-            files.forEach((file) => {
+            files.forEach((file, index) => {
                 const reader = new FileReader();
                 reader.onload = () => {
-                    previewUrls.push(reader.result);
+                    // Save both the base64 source layout and file name string reference
+                    previewUrls[index] = {
+                        name: file.name,
+                        src: reader.result
+                    };
                     loaded++;
                     if (loaded === files.length) {
                         setNewPreviews(previewUrls);
@@ -49,20 +43,61 @@ export default function Edit({ story }) {
         }
     };
 
-    // Toggle items between active gallery view and deletion queue arrays
     const toggleDeleteImage = (id) => {
-        if (data.delete_images.includes(id)) {
-            setData('delete_images', data.delete_images.filter(imgId => imgId !== id));
-        } else {
-            setData('delete_images', [...data.delete_images, id]);
+        const isMarked = data.delete_images.includes(id);
+        const nextDeleteImages = isMarked
+            ? data.delete_images.filter((imgId) => imgId !== id)
+            : [...data.delete_images, id];
+            
+        const remainingImages = story.images.filter((img) => !nextDeleteImages.includes(img.id));
+        let nextCoverId = data.cover_image_id;
+        let isNewCover = data.is_new_cover;
+        let newCoverName = data.new_cover_name;
+        
+        // Dynamic Fallback: If removing the current cover, shift to next remaining asset
+        if (!isMarked && data.cover_image_id === id && !data.is_new_cover) {
+            if (remainingImages.length > 0) {
+                nextCoverId = remainingImages[0].id;
+            } else if (data.new_images.length > 0) {
+                nextCoverId = 0;
+                isNewCover = true;
+                newCoverName = data.new_images[0].name;
+            }
         }
+
+        setData({
+            ...data,
+            delete_images: nextDeleteImages,
+            cover_image_id: nextCoverId,
+            is_new_cover: isNewCover,
+            new_cover_name: newCoverName
+        });
+    };
+
+    const selectExistingAsCover = (id) => {
+        setData({
+            ...data,
+            cover_image_id: id,
+            is_new_cover: false,
+            new_cover_name: ''
+        });
+    };
+
+    const selectNewAsCover = (fileName) => {
+        setData({
+            ...data,
+            cover_image_id: 0,
+            is_new_cover: true,
+            new_cover_name: fileName
+        });
     };
 
     const submit = (e) => {
         e.preventDefault();
-        // Send as POST request because _method: 'PATCH' spoofing handles file delivery correctly
+        // Fire via POST because Inertia + FormData requires root POST method execution
         post(route('stories.update', story.id), {
             forceFormData: true,
+            preserveScroll: true,
         });
     };
 
@@ -70,9 +105,7 @@ export default function Edit({ story }) {
         <AuthenticatedLayout
             header={
                 <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold text-gray-800">
-                        Edit Story Details
-                    </h2>
+                    <h2 className="text-xl font-semibold text-gray-800">Edit Story Details</h2>
                     <Link href={route('stories.index')} className="text-sm text-gray-600 hover:text-gray-900">
                         ← Cancel & Go Back
                     </Link>
@@ -109,66 +142,93 @@ export default function Edit({ story }) {
                             {errors.description && <p className="text-sm text-red-500 mt-1">{errors.description}</p>}
                         </div>
 
-                        {/* MANAGE EXISTING IMAGES GRAPH */}
-                        {story.images && story.images.length > 0 && (
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Manage Existing Photos <span className="text-xs font-normal text-gray-400">(Click text options to alter settings)</span>
-                                </label>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 border bg-gray-50/50 p-4 rounded-xl">
-                                    {story.images.map((img) => {
-                                        const isMarkedDeleted = data.delete_images.includes(img.id);
-                                        const isCurrentCover = data.cover_image_id === img.id;
+                        {/* UNIFIED IMAGES SELECTOR DECK */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Manage Active Photos & Cover Selections
+                            </label>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 border bg-gray-50/50 p-4 rounded-xl">
+                                
+                                {/* Existing Database Files */}
+                                {story.images && story.images.map((img) => {
+                                    const isMarkedDeleted = data.delete_images.includes(img.id);
+                                    const isCurrentCover = !data.is_new_cover && data.cover_image_id === img.id;
 
-                                        return (
-                                            <div 
-                                                key={img.id} 
-                                                className={`relative rounded-lg overflow-hidden border bg-white flex flex-col justify-between transition ${
-                                                    isMarkedDeleted ? 'opacity-40 border-red-300' : 'border-gray-200'
-                                                }`}
-                                            >
-                                                <img src={`/storage/${img.path}`} className="h-24 w-full object-cover" alt="Gallery item" />
-                                                
-                                                {/* Status overlay indicators */}
-                                                <div className="absolute top-1 right-1 flex flex-col gap-1">
-                                                    {isCurrentCover && !isMarkedDeleted && (
-                                                        <span className="bg-blue-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">Cover</span>
-                                                    )}
-                                                    {isMarkedDeleted && (
-                                                        <span className="bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">Deleting</span>
-                                                    )}
-                                                </div>
-
-                                                {/* Action Buttons Toggles Container */}
-                                                <div className="p-1.5 border-t bg-gray-50 flex items-center justify-between text-[11px] font-medium gap-1">
-                                                    <button
-                                                        type="button"
-                                                        disabled={isMarkedDeleted}
-                                                        onClick={() => setData('cover_image_id', img.id)}
-                                                        className={`px-1.5 py-0.5 rounded transition ${
-                                                            isCurrentCover ? 'text-blue-700 font-bold bg-blue-50' : 'text-gray-500 hover:bg-gray-200 disabled:opacity-20'
-                                                        }`}
-                                                    >
-                                                        Set Cover
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => toggleDeleteImage(img.id)}
-                                                        className={`px-1.5 py-0.5 rounded transition ${
-                                                            isMarkedDeleted ? 'text-green-700 bg-green-50' : 'text-red-600 hover:bg-red-50'
-                                                        }`}
-                                                    >
-                                                        {isMarkedDeleted ? 'Keep' : 'Remove'}
-                                                    </button>
-                                                </div>
+                                    return (
+                                        <div 
+                                            key={img.id} 
+                                            className={`relative rounded-lg overflow-hidden border bg-white flex flex-col justify-between transition ${
+                                                isMarkedDeleted ? 'opacity-40 border-red-300' : 'border-gray-200'
+                                            }`}
+                                        >
+                                            <img src={`/storage/${img.path}`} className="h-24 w-full object-cover" alt="Gallery item" />
+                                            
+                                            <div className="absolute top-1 right-1 flex flex-col gap-1">
+                                                {isCurrentCover && !isMarkedDeleted && (
+                                                    <span className="bg-blue-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">Cover</span>
+                                                )}
+                                                {isMarkedDeleted && (
+                                                    <span className="bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">Deleting</span>
+                                                )}
                                             </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        )}
 
-                        {/* UPLOAD NEW ADDITIONAL IMAGES */}
+                                            <div className="p-1.5 border-t bg-gray-50 flex items-center justify-between text-[11px] font-medium gap-1">
+                                                <button
+                                                    type="button"
+                                                    disabled={isMarkedDeleted}
+                                                    onClick={() => selectExistingAsCover(img.id)}
+                                                    className={`px-1.5 py-0.5 rounded transition ${
+                                                        isCurrentCover ? 'text-blue-700 font-bold bg-blue-50' : 'text-gray-500 hover:bg-gray-200 disabled:opacity-20'
+                                                    }`}
+                                                >
+                                                    Set Cover
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => toggleDeleteImage(img.id)}
+                                                    className={`px-1.5 py-0.5 rounded transition ${
+                                                        isMarkedDeleted ? 'text-green-700 bg-green-50' : 'text-red-600 hover:bg-red-50'
+                                                    }`}
+                                                >
+                                                    {isMarkedDeleted ? 'Keep' : 'Remove'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+
+                                {/* Newly Selected Local Images */}
+                                {newPreviews.map((preview, idx) => {
+                                    const isCurrentCover = data.is_new_cover && data.new_cover_name === preview.name;
+
+                                    return (
+                                        <div key={`new-${idx}`} className="relative rounded-lg overflow-hidden border border-blue-300 bg-white flex flex-col justify-between shadow-sm">
+                                            <img src={preview.src} className="h-24 w-full object-cover" alt="New upload preview" />
+                                            
+                                            <div className="absolute top-1 right-1">
+                                                {isCurrentCover && (
+                                                    <span className="bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">New Cover</span>
+                                                )}
+                                            </div>
+
+                                            <div className="p-1.5 border-t bg-blue-50/40 flex items-center justify-between text-[11px] font-medium">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => selectNewAsCover(preview.name)}
+                                                    className={`w-full text-center py-0.5 rounded transition ${
+                                                        isCurrentCover ? 'text-blue-700 font-bold bg-blue-100' : 'text-gray-600 hover:bg-gray-200'
+                                                    }`}
+                                                >
+                                                    Set As Cover
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* UPLOAD SELECTION SELECTOR */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Add More Photos</label>
                             <input
@@ -181,21 +241,6 @@ export default function Edit({ story }) {
                             {progress && <p className="mt-2 text-sm text-gray-500">Uploading: {progress.percentage}%</p>}
                         </div>
 
-                        {/* BRAND NEW FILE CHOICE ATTACHMENT PREVIEWS */}
-                        {newPreviews.length > 0 && (
-                            <div className="rounded-xl border bg-blue-50/20 p-4">
-                                <p className="text-sm font-medium text-blue-800 mb-3">Newly Appended Photos ({newPreviews.length})</p>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                                    {newPreviews.map((url, idx) => (
-                                        <div key={idx} className="rounded-lg overflow-hidden border bg-white shadow-sm">
-                                            <img src={url} className="h-24 w-full object-cover" alt="Pending attachment layout" />
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* FORM ACTION CONTROL BUTTONS */}
                         <div className="flex items-center justify-end gap-3 border-t pt-4">
                             <Link href={route('stories.index')} className="rounded-lg border px-4 py-2 text-sm text-gray-600 hover:bg-gray-50">
                                 Cancel

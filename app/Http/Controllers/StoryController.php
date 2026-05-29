@@ -94,59 +94,83 @@ class StoryController extends Controller
         ]);
     }
 
-    public function update(Request $request, Story $story)
-    {
-        $validated = $request->validate([
-            'title'          => 'required|string|max:255',
-            'description'    => 'required|string',
-            'cover_image_id' => 'required|numeric',
-            'delete_images'  => 'nullable|array',
-            'delete_images.*'=> 'numeric',
-            'new_images'     => 'nullable|array',
-            'new_images.*'   => 'image|max:2048',
-        ]);
+public function update(Request $request, Story $story)
+{
+    $validated = $request->validate([
+        'title'          => 'required|string|max:255',
+        'description'    => 'required|string',
+        'cover_image_id' => 'required|numeric',
+        'is_new_cover'   => 'required|string', // Forms send booleans as strings via multipart
+        'new_cover_name' => 'nullable|string',
+        'delete_images'  => 'nullable|array',
+        'delete_images.*'=> 'numeric',
+        'new_images'     => 'nullable|array',
+        'new_images.*'   => 'image|max:2048',
+    ]);
 
-        $story->update([
-            'title'       => $validated['title'],
-            'description' => $validated['description'],
-        ]);
+    $story->update([
+        'title'       => $validated['title'],
+        'description' => $validated['description'],
+    ]);
 
-        if (!empty($request->delete_images)) {
-            $imagesToDelete = StoryImage::whereIn('id', $request->delete_images)
-                                        ->where('story_id', $story->id)
-                                        ->get();
-            
-            foreach ($imagesToDelete as $img) {
+    // 1. Process files deletion safely
+    $deleteIds = $request->input('delete_images');
+    if (!empty($deleteIds) && is_array($deleteIds)) {
+        $imagesToDelete = StoryImage::whereIn('id', $deleteIds)
+                                    ->where('story_id', $story->id)
+                                    ->get();
+        
+        foreach ($imagesToDelete as $img) {
+            if (Storage::disk('public')->exists($img->path)) {
                 Storage::disk('public')->delete($img->path);
-                $img->delete();
             }
+            $img->delete();
         }
+    }
 
-        if ($request->hasFile('new_images')) {
-            foreach ($request->file('new_images') as $file) {
+    // Reset current cover state targets across the database
+    $story->images()->update(['is_cover' => false]);
+    $newCoverAssigned = false;
+    $isNewCoverFlag = filter_var($validated['is_new_cover'], FILTER_VALIDATE_BOOLEAN);
+
+    // 2. Process incoming file uploads
+    if ($request->hasFile('new_images')) {
+        foreach ($request->file('new_images') as $file) {
+            if ($file->isValid()) {
                 $path = $file->store('stories', 'public');
+                
+                // Match the client file name against the selected file layout name
+                $shouldBeCover = $isNewCoverFlag && ($file->getClientOriginalName() === $validated['new_cover_name']);
+
                 $story->images()->create([
                     'path'     => $path,
-                    'is_cover' => false,
+                    'is_cover' => $shouldBeCover,
                 ]);
+
+                if ($shouldBeCover) {
+                    $newCoverAssigned = true;
+                }
             }
         }
+    }
 
-        StoryImage::where('story_id', $story->id)->update(['is_cover' => false]);
-        
-        $targetCover = StoryImage::where('story_id', $story->id)->where('id', $validated['cover_image_id'])->first();
+    // 3. Sync Fallback cover mapping states
+    if (!$newCoverAssigned) {
+        $targetCover = $story->images()->where('id', $validated['cover_image_id'])->first();
         
         if ($targetCover) {
             $targetCover->update(['is_cover' => true]);
         } else {
-            $fallback = StoryImage::where('story_id', $story->id)->first();
+            $fallback = $story->images()->first();
             if ($fallback) {
                 $fallback->update(['is_cover' => true]);
             }
         }
-
-        return redirect()->route('stories.index')->with('success', 'Story updated successfully.');
     }
+
+    // Redirect to index or loop back cleanly to re-render fresh state props automatically
+    return redirect()->route('stories.index')->with('success', 'Story updated successfully.');
+}
 
     public function showClientStory(Story $story)
     {
