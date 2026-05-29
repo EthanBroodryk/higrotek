@@ -10,9 +10,9 @@ export default function Index({ users = [] }) {
                         User Management
                     </h2>
 
-                    {/* Placeholder link for future User creation/invitation form */}
+                    {/* ✅ Points directly to creation view handler */}
                     <Link
-                        href="#"
+                        href={route('users.create')}
                         className="rounded-xl bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-green-700"
                     >
                         + Create User
@@ -49,15 +49,15 @@ export default function Index({ users = [] }) {
                                       })
                                     : 'N/A';
 
+                                const isAdmin = userItem.role === 'admin';
+
                                 return (
                                     <div
                                         key={userItem.id}
                                         className="overflow-hidden rounded-2xl border bg-white shadow-sm transition hover:shadow-md flex flex-col justify-between"
                                     >
                                         <div>
-                                            {/* MODERN CARD HERO HEADER BACKGROUND */}
                                             <div className="relative h-24 w-full bg-gradient-to-r from-green-600 to-emerald-700 flex items-end px-5">
-                                                {/* Profile Avatar Overlay Offset */}
                                                 <div className="absolute -bottom-6 left-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-white border-2 border-white text-xl font-bold text-green-700 shadow-md">
                                                     <div className="flex h-full w-full items-center justify-center rounded-xl bg-green-50">
                                                         {initials}
@@ -65,7 +65,6 @@ export default function Index({ users = [] }) {
                                                 </div>
                                             </div>
 
-                                            {/* CORE DETAILS IDENTIFIER CARD BODY */}
                                             <div className="p-5 pt-8">
                                                 <h3 className="text-lg font-bold text-gray-800 line-clamp-1">
                                                     {userItem.name}
@@ -74,21 +73,24 @@ export default function Index({ users = [] }) {
                                                     {userItem.email}
                                                 </p>
                                                 
+                                                {/* ✅ Dynamic Badge based on Role field values */}
                                                 <div className="mt-4 flex flex-wrap gap-1.5">
-                                                    <span className="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-600">
-                                                        Team Member
+                                                    <span className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-bold ${
+                                                        isAdmin 
+                                                            ? 'bg-purple-100 text-purple-700 border border-purple-200' 
+                                                            : 'bg-gray-100 text-gray-600 border border-gray-200'
+                                                    }`}>
+                                                        {isAdmin ? 'Administrator' : 'Team Member'}
                                                     </span>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        {/* CARD FOOTER METADATA METRICS */}
                                         <div className="px-5 pb-4 pt-3 flex items-center justify-between text-xs text-gray-400 border-t border-gray-100 bg-gray-50/50">
                                             <span>
                                                 Joined: {formattedDate}
                                             </span>
 
-                                            {/* Future Management Dropdown/Link anchor */}
                                             <Link
                                                 href="#"
                                                 className="text-green-600 font-semibold hover:underline"

@@ -8,6 +8,7 @@ use App\Http\Controllers\UploadsController;
 use App\Models\CompanyLogo;
 use App\Http\Controllers\StoryController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ManageUsersController;
 
 // --- PUBLIC VISITOR ROUTES ---
 Route::get('/', [StoryController::class, 'getStoriesHomePage'])->name('welcome');
@@ -26,10 +27,11 @@ Route::middleware(['auth'])->group(function () {
     // Route::patch('/stories/{story}', [StoryController::class, 'update'])->name('stories.update');
     Route::post('/stories/{story}', [StoryController::class, 'update'])->name('stories.update');
 
-    //Users
-    Route::get('/users', function () {
-        return Inertia::render('Users/Index'); 
-    })->name('users.index');
+
+    // User Management Directory Deck
+    Route::get('/users', [ManageUsersController::class, 'index'])->name('users.index');
+    Route::get('/users/create', [ManageUsersController::class, 'create'])->name('users.create');
+    Route::post('/users', [ManageUsersController::class, 'store'])->name('users.store');
     
 
     // Dashboard Hub
