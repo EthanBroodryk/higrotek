@@ -35,12 +35,19 @@ export default function AuthenticatedLayout({ header, children }) {
                                     Dashboard
                                 </NavLink>
                                 
-                                {/* Added modern Job Cards Nav Link pairing */}
                                 <NavLink
                                   href={route('stories.index')}
                                   active={route().current('stories.*')}
                                 >
                                     Stories/Events
+                                </NavLink>
+
+                                {/* ✅ Added Desktop User Management Link */}
+                                <NavLink
+                                  href={route('users.index')}
+                                  active={route().current('users.*')}
+                                >
+                                    User Management
                                 </NavLink>
                             </div>
                         </div>
@@ -55,7 +62,6 @@ export default function AuthenticatedLayout({ header, children }) {
                                                 type="button"
                                                 className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 hover:text-gray-900 focus:outline-none"
                                             >
-                                                {/* Clean Avatar Circle Initials trick */}
                                                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-xs font-semibold text-green-700">
                                                     {user.name.charAt(0).toUpperCase()}
                                                 </div>
@@ -140,14 +146,22 @@ export default function AuthenticatedLayout({ header, children }) {
                         </ResponsiveNavLink>
                         
                         <ResponsiveNavLink
-                                href={route('stories.index')}
-                                active={route().current('stories.*')}
-                            >
-                                Stories / Events
+                            href={route('stories.index')}
+                            active={route().current('stories.*')}
+                        >
+                            Stories / Events
+                        </ResponsiveNavLink>
+
+                        {/* ✅ Added Mobile User Management Link */}
+                        <ResponsiveNavLink
+                            href={route('users.index')}
+                            active={route().current('users.*')}
+                        >
+                            User Management
                         </ResponsiveNavLink>
                     </div>
 
-                    {/* Mobile Profile & Action Links Tray */}
+                    {/* Mobile Profile Tray */}
                     <div className="border-t border-gray-100 pb-3 pt-4 bg-gray-50/70">
                         <div className="flex items-center px-4 mb-3">
                             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-600 text-sm font-bold text-white shadow-sm">
@@ -176,7 +190,6 @@ export default function AuthenticatedLayout({ header, children }) {
                 </div>
             </nav>
 
-            {/* Header Content Section Block */}
             {header && (
                 <header className="bg-white border-b border-gray-100">
                     <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
@@ -185,7 +198,6 @@ export default function AuthenticatedLayout({ header, children }) {
                 </header>
             )}
 
-            {/* Main Application Core Layout Workspace Slot */}
             <main className="mx-auto max-w-7xl">{children}</main>
         </div>
     );

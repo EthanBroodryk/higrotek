@@ -25,6 +25,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/stories/{story}/edit', [StoryController::class, 'edit'])->name('stories.edit');
     // Route::patch('/stories/{story}', [StoryController::class, 'update'])->name('stories.update');
     Route::post('/stories/{story}', [StoryController::class, 'update'])->name('stories.update');
+
+    //Users
+    Route::get('/users', function () {
+        return Inertia::render('Users/Index'); 
+    })->name('users.index');
     
 
     // Dashboard Hub
