@@ -9,7 +9,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function ClientShow({ story }) {
-    const allImages = story?.images || [];
+    // --- COVER PHOTO & GALLERY LOGIC INTEGRATION ---
+    // Find designated cover image or fallback to the first array entry
+    const coverImage = story?.cover_image?.path || story?.images?.[0]?.path;
+    
+    // Filter out the active cover image so it doesn't repeat inside the lower gallery grid
+    const galleryImages = story?.images?.filter(img => img.path !== coverImage) || [];
+
+    // Combine them safely for the lightbox carousel: cover goes first, followed by remaining gallery pieces
+    const allImages = coverImage 
+        ? [{ path: coverImage }, ...galleryImages] 
+        : galleryImages;
+
     const [isOpen, setIsOpen] = useState(false);
     const [activeIndex, setActiveIndex] = useState(0);
 
@@ -59,14 +70,14 @@ export default function ClientShow({ story }) {
 
                     {/* Main Content Area styled using shadcn Card component shell layout structure */}
                     <Card className="overflow-hidden border-slate-200/60 shadow-sm rounded-3xl bg-white">
-                        {allImages.length > 0 && (
+                        {coverImage ? (
                             <div className="relative h-64 md:h-[460px] w-full bg-slate-950 group overflow-hidden">
                                 <div 
                                     className="absolute inset-0 bg-cover bg-center blur-2xl opacity-30 scale-110 pointer-events-none"
-                                    style={{ backgroundImage: `url('/storage/${allImages[0]?.path}')` }}
+                                    style={{ backgroundImage: `url('/storage/${coverImage}')` }}
                                 />
                                 <img 
-                                    src={`/storage/${allImages[0]?.path}`} 
+                                    src={`/storage/${coverImage}`} 
                                     alt={story?.title} 
                                     className="relative w-full h-full object-contain z-0"
                                 />
@@ -83,6 +94,10 @@ export default function ClientShow({ story }) {
                                     </Button>
                         
                                 </div>
+                            </div>
+                        ) : (
+                            <div className="border border-dashed bg-slate-50/50 p-12 text-center text-slate-400 m-6 rounded-2xl">
+                                No images uploaded for this project story.
                             </div>
                         )}
 
@@ -107,8 +122,8 @@ export default function ClientShow({ story }) {
                         </CardContent>
                     </Card>
 
-                    {/* PHOTO GRID GALLERY - Secondary Row Layout Section */}
-                    {allImages.length > 1 && (
+                    {/* PHOTO GRID GALLERY - Secondary Row Layout Section (Excludes Hero Image) */}
+                    {galleryImages.length > 0 && (
                         <div className="mt-16 text-center">
                             <div className="flex items-center justify-center gap-2 mb-6">
                                 <LayoutGrid className="h-4 w-4 text-slate-400" />
@@ -117,10 +132,11 @@ export default function ClientShow({ story }) {
                                 </h2>
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                {allImages.map((image, idx) => (
+                                {galleryImages.map((image, idx) => (
                                     <Card 
                                         key={image.id || idx} 
-                                        onClick={() => openGallery(idx)}
+                                        /* +1 shifts index mapping automatically since index 0 is our cover photo inside the modal context array */
+                                        onClick={() => openGallery(idx + 1)}
                                         className="aspect-video rounded-xl overflow-hidden bg-slate-50 border-slate-200/60 shadow-sm cursor-pointer relative group transition-all duration-300 hover:border-slate-300"
                                     >
                                         <img 
@@ -142,15 +158,10 @@ export default function ClientShow({ story }) {
                 </div>
             </div>
 
-            {/* ✅ UPDATED FULL SCREEN MEDIA VIEWER DIALOG BOX TRACK */}
+            {/* FULL SCREEN MEDIA VIEWER DIALOG BOX */}
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                {/* 
-                  1. `bg-black` maps down to completely black container profiles
-                  2. `[&>button]:hidden` uses arbitrary selectors to completely target and vanish shadcn's original secondary generic absolute cross button template! 
-                */}
                 <DialogContent className="max-w-[100vw] h-screen w-screen p-0 m-0 bg-black border-none flex flex-col justify-between sm:rounded-none text-white focus:outline-none [&>button]:hidden">
                     
-                    {/* Accessible Screen Reader Titles for Radix Compliance */}
                     <div className="sr-only">
                         <DialogTitle>{story?.title || 'Gallery'}</DialogTitle>
                         <DialogDescription>Project imagery slide showcase overview</DialogDescription>
@@ -162,7 +173,6 @@ export default function ClientShow({ story }) {
                             Image {activeIndex + 1} of {allImages.length}
                         </div>
                         
-                        {/* Only your deliberate, clean control button remains visible here */}
                         <DialogClose asChild>
                             <Button 
                                 size="icon" 
@@ -209,7 +219,7 @@ export default function ClientShow({ story }) {
                         )}
                     </div>
 
-                    {/* BOTTOM THUMBNAIL COMPACT BAR TRACK SELECTION SECTION */}
+                    {/* BOTTOM THUMBNAIL COMPACT BAR TRACK */}
                     <div className="w-full max-w-3xl mx-auto p-6 border-t border-neutral-900 bg-black/40 backdrop-blur-md z-50">
                         <div className="flex gap-3 overflow-x-auto justify-start md:justify-center pb-1 no-scrollbar scroll-smooth">
                             {allImages.map((img, index) => (
@@ -235,7 +245,6 @@ export default function ClientShow({ story }) {
                 </DialogContent>
             </Dialog>
             
-            {/* Utility custom CSS tag cleanup wrapper to hide native horizontal scroll track indicators */}
             <style dangerouslySetInnerHTML={{__html: `
                 .no-scrollbar::-webkit-scrollbar { display: none; }
                 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
