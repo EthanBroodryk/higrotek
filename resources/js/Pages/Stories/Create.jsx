@@ -16,33 +16,25 @@ export default function Create() {
     const [coverIndex, setCoverIndex] = useState(0);
 
     const handleImagesChange = (e) => {
-        const files = Array.from(e.target.files || []);
-        
-        if (files.length > 0) {
-            setData('images', files);
-            
-            // Reset the cover choice to index 0 on fresh upload resets
-            setCoverIndex(0);
-            setData('cover_index', 0);
+        const newFiles = Array.from(e.target.files || []);
 
-            // Pre-allocate array slots to preserve identical index ordering
-            const previewUrls = new Array(files.length);
-            let loadedCount = 0;
+        if (newFiles.length === 0) return;
 
-            files.forEach((file, index) => {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    // Assign to the strict array slot position matching native files array
-                    previewUrls[index] = reader.result;
-                    loadedCount++;
-                    
-                    if (loadedCount === files.length) {
-                        setPreviews(previewUrls);
-                    }
-                };
-                reader.readAsDataURL(file);
-            });
-        }
+        // Merge existing + new uploads
+        const combinedFiles = [...data.images, ...newFiles];
+        setData("images", combinedFiles);
+
+        // Update previews
+        const updatedPreviews = [...previews];
+
+        newFiles.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                updatedPreviews.push(reader.result);
+                setPreviews([...updatedPreviews]);
+            };
+            reader.readAsDataURL(file);
+        });
     };
     const submit = (e) => {
         e.preventDefault();
@@ -126,7 +118,7 @@ export default function Create() {
                             <input
                                 type="file"
                                 accept="image/*"
-                                multiple // ✅ Allows selection of more than one image
+                                multiple 
                                 onChange={handleImagesChange}
                                 className="mt-1 w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
                             />
