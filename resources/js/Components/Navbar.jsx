@@ -220,7 +220,7 @@ export default function Navbar() {
                             scrollToSection("leadership");
                         }}
                         className={`block px-6 py-3 w-full text-left transition ${
-                            active === "services"
+                            active === "leadership"
                                 ? "text-blue-700 font-semibold bg-blue-50"
                                 : "text-gray-700 hover:bg-blue-50"
                         }`}
