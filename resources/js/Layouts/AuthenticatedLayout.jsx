@@ -21,8 +21,21 @@ export default function AuthenticatedLayout({ header, children }) {
                         {/* Left Side: Logo & Main Navigation */}
                         <div className="flex">
                             <div className="flex shrink-0 items-center">
-                                <Link href={route('dashboard')} className="transition hover:opacity-90">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-green-600" />
+                                {/* ✅ Updated href route target to point to the main landing home page '/' */}
+                                <Link href="/" className="transition hover:opacity-80 active:scale-98 flex items-center">
+                                    {usePage().props.logo ? (
+                                /* ✅ Renders dynamic dynamic database uploaded company business logo asset path pointer */
+                                <img 
+                                    src={usePage().props.logo} 
+                                    alt="Company Logo" 
+                                    className="block h-9 w-auto object-contain rounded-md"
+                                />
+                                ) : (
+                                /* ✅ Clean typography fallback standard text indicator if no active record is currently flagged */
+                                <span className="text-lg font-bold tracking-tight text-slate-800">
+                                Higrotek
+                                </span>
+                                )}
                                 </Link>
                             </div>
 
