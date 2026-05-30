@@ -10,7 +10,6 @@ export default function Index({ users = [] }) {
                         User Management
                     </h2>
 
-                    {/* ✅ Points directly to creation view handler */}
                     <Link
                         href={route('users.create')}
                         className="rounded-xl bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-green-700"
@@ -35,72 +34,87 @@ export default function Index({ users = [] }) {
                             </p>
                         </div>
                     ) : (
-                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                            {users.map((userItem) => {
-                                const initials = userItem.name
-                                    ? userItem.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)
-                                    : 'U';
+                        /* ✅ MODERN CLEAN MANAGEMENT TABLE WRAPPER */
+                        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                            <div className="overflow-x-auto">
+                                <table className="w-full min-w-[700px] border-collapse text-left text-sm text-gray-500">
+                                    
+                                    {/* Table Headings */}
+                                    <thead className="bg-gray-50/70 border-b border-gray-200 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                                        <tr>
+                                            <th scope="col" className="px-6 py-4 font-semibold">User</th>
+                                            <th scope="col" className="px-6 py-4 font-semibold">Role</th>
+                                            <th scope="col" className="px-6 py-4 font-semibold">Joined Date</th>
+                                            <th scope="col" className="px-6 py-4 font-semibold text-right">Actions</th>
+                                        </tr>
+                                    </thead>
 
-                                const formattedDate = userItem.created_at
-                                    ? new Date(userItem.created_at).toLocaleDateString(undefined, {
-                                          year: 'numeric',
-                                          month: 'short',
-                                          day: 'numeric'
-                                      })
-                                    : 'N/A';
+                                    {/* Table Body Content Loop */}
+                                    <tbody className="divide-y divide-gray-100 border-t border-gray-100">
+                                        {users.map((userItem) => {
+                                            const initials = userItem.name
+                                                ? userItem.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)
+                                                : 'U';
 
-                                const isAdmin = userItem.role === 'admin';
+                                            const formattedDate = userItem.created_at
+                                                ? new Date(userItem.created_at).toLocaleDateString(undefined, {
+                                                      year: 'numeric',
+                                                      month: 'short',
+                                                      day: 'numeric'
+                                                  })
+                                                : 'N/A';
 
-                                return (
-                                    <div
-                                        key={userItem.id}
-                                        className="overflow-hidden rounded-2xl border bg-white shadow-sm transition hover:shadow-md flex flex-col justify-between"
-                                    >
-                                        <div>
-                                            <div className="relative h-24 w-full bg-gradient-to-r from-green-600 to-emerald-700 flex items-end px-5">
-                                                <div className="absolute -bottom-6 left-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-white border-2 border-white text-xl font-bold text-green-700 shadow-md">
-                                                    <div className="flex h-full w-full items-center justify-center rounded-xl bg-green-50">
-                                                        {initials}
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            const isAdmin = userItem.role === 'admin';
 
-                                            <div className="p-5 pt-8">
-                                                <h3 className="text-lg font-bold text-gray-800 line-clamp-1">
-                                                    {userItem.name}
-                                                </h3>
-                                                <p className="text-sm font-medium text-gray-500 truncate mt-0.5">
-                                                    {userItem.email}
-                                                </p>
-                                                
-                                                {/* ✅ Dynamic Badge based on Role field values */}
-                                                <div className="mt-4 flex flex-wrap gap-1.5">
-                                                    <span className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-bold ${
-                                                        isAdmin 
-                                                            ? 'bg-purple-100 text-purple-700 border border-purple-200' 
-                                                            : 'bg-gray-100 text-gray-600 border border-gray-200'
-                                                    }`}>
-                                                        {isAdmin ? 'Administrator' : 'Team Member'}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
+                                            return (
+                                                <tr key={userItem.id} className="hover:bg-gray-50/50 transition duration-150">
+                                                    
+                                                    {/* COLUMN 1: AVATAR, NAME & EMAIL */}
+                                                    <td className="px-6 py-4">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-50 border border-green-100 text-sm font-bold text-green-700">
+                                                                {initials}
+                                                            </div>
+                                                            <div className="font-medium text-gray-800">
+                                                                <div className="text-sm font-semibold text-gray-900">{userItem.name}</div>
+                                                                <div className="text-xs text-gray-500 mt-0.5">{userItem.email}</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
 
-                                        <div className="px-5 pb-4 pt-3 flex items-center justify-between text-xs text-gray-400 border-t border-gray-100 bg-gray-50/50">
-                                            <span>
-                                                Joined: {formattedDate}
-                                            </span>
+                                                    {/* COLUMN 2: ROLE STATUS BADGE */}
+                                                    <td className="px-6 py-4">
+                                                        <span className={`inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-bold ${
+                                                            isAdmin 
+                                                                ? 'bg-purple-50 text-purple-700 border border-purple-100' 
+                                                                : 'bg-slate-50 text-slate-600 border border-slate-100'
+                                                        }`}>
+                                                            {isAdmin ? 'Administrator' : 'Team Member'}
+                                                        </span>
+                                                    </td>
 
-                                            <Link
-                                                href="#"
-                                                className="text-green-600 font-semibold hover:underline"
-                                            >
-                                                Manage
-                                            </Link>
-                                        </div>
-                                    </div>
-                                );
-                            })}
+                                                    {/* COLUMN 3: JOINED DATE */}
+                                                    <td className="px-6 py-4 text-gray-600 font-medium">
+                                                        {formattedDate}
+                                                    </td>
+
+                                                    {/* COLUMN 4: ACTIONS BAR */}
+                                                    <td className="px-6 py-4 text-right">
+                                                        <Link
+                                                            href="#"
+                                                            className="inline-flex items-center rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-green-600 shadow-sm transition hover:bg-gray-50"
+                                                        >
+                                                            Manage
+                                                        </Link>
+                                                    </td>
+
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+
+                                </table>
+                            </div>
                         </div>
                     )}
 
