@@ -20,27 +20,33 @@ export default function Edit({ story }) {
 
     const handleNewImagesChange = (e) => {
         const files = Array.from(e.target.files || []);
-        if (files.length > 0) {
-            setData('new_images', files);
+        if (files.length === 0) return;
 
-            const previewUrls = new Array(files.length);
-            let loaded = 0;
-            files.forEach((file, index) => {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    // Save both the base64 source layout and file name string reference
-                    previewUrls[index] = {
-                        name: file.name,
-                        src: reader.result
-                    };
-                    loaded++;
-                    if (loaded === files.length) {
-                        setNewPreviews(previewUrls);
-                    }
-                };
-                reader.readAsDataURL(file);
-            });
-        }
+        // 1. Merge existing files with the newly picked files so they append instead of overwrite
+        const combinedFiles = [...data.new_images, ...files];
+        setData('new_images', combinedFiles);
+
+        // 2. Clone the existing previews array so we don't clear the old thumbnails
+        const updatedPreviews = [...newPreviews];
+
+        let loaded = 0;
+        files.forEach((file) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                // Append the new base64 metadata to our working copy array
+                updatedPreviews.push({
+                    name: file.name,
+                    src: reader.result
+                });
+                
+                loaded++;
+                // Only update the state when this specific batch finishes reading files
+                if (loaded === files.length) {
+                    setNewPreviews([...updatedPreviews]);
+                }
+            };
+            reader.readAsDataURL(file);
+        });
     };
 
     const toggleDeleteImage = (id) => {
@@ -73,6 +79,40 @@ export default function Edit({ story }) {
             new_cover_name: newCoverName
         });
     };
+
+    const removeNewImage = (index, fileName) => {
+    // 1. Remove from the local preview UI array
+    const filteredPreviews = newPreviews.filter((_, i) => i !== index);
+    setNewPreviews(filteredPreviews);
+
+    // 2. Remove from Inertia's binary upload queue array
+    const filteredFiles = data.new_images.filter((_, i) => i !== index);
+
+    // 3. Fallback: If we just deleted the image currently set as the new cover
+    let nextIsNewCover = data.is_new_cover;
+    let nextNewCoverName = data.new_cover_name;
+    let nextCoverImageId = data.cover_image_id;
+
+    if (data.is_new_cover && data.new_cover_name === fileName) {
+        // If there are other new images left, fall back to the first one remaining
+        if (filteredPreviews.length > 0) {
+            nextNewCoverName = filteredPreviews[0].name;
+        } else {
+            // No new images left at all? Revert cover selection to the first existing story image
+            nextIsNewCover = false;
+            nextNewCoverName = '';
+            nextCoverImageId = story.images?.[0]?.id || 0;
+        }
+    }
+
+    setData({
+        ...data,
+        new_images: filteredFiles,
+        is_new_cover: nextIsNewCover,
+        new_cover_name: nextNewCoverName,
+        cover_image_id: nextCoverImageId,
+    });
+};
 
     const selectExistingAsCover = (id) => {
         setData({
@@ -193,32 +233,40 @@ export default function Edit({ story }) {
 
                                 {/* Newly Selected Local Images */}
                                 {newPreviews.map((preview, idx) => {
-                                    const isCurrentCover = data.is_new_cover && data.new_cover_name === preview.name;
+                                const isCurrentCover = data.is_new_cover && data.new_cover_name === preview.name;
 
-                                    return (
-                                        <div key={`new-${idx}`} className="relative rounded-lg overflow-hidden border border-blue-300 bg-white flex flex-col justify-between shadow-sm">
-                                            <img src={preview.src} className="h-24 w-full object-cover" alt="New upload preview" />
-                                            
-                                            <div className="absolute top-1 right-1">
-                                                {isCurrentCover && (
-                                                    <span className="bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">New Cover</span>
-                                                )}
-                                            </div>
-
-                                            <div className="p-1.5 border-t bg-blue-50/40 flex items-center justify-between text-[11px] font-medium">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => selectNewAsCover(preview.name)}
-                                                    className={`w-full text-center py-0.5 rounded transition ${
-                                                        isCurrentCover ? 'text-blue-700 font-bold bg-blue-100' : 'text-gray-600 hover:bg-gray-200'
-                                                    }`}
-                                                >
-                                                    Set As Cover
-                                                </button>
-                                            </div>
+                                return (
+                                    <div key={`new-${idx}`} className="relative rounded-lg overflow-hidden border border-blue-300 bg-white flex flex-col justify-between shadow-sm">
+                                        <img src={preview.src} className="h-24 w-full object-cover" alt="New upload preview" />
+                                        
+                                        <div className="absolute top-1 right-1">
+                                            {isCurrentCover && (
+                                                <span className="bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">New Cover</span>
+                                            )}
                                         </div>
-                                    );
-                                })}
+
+                                        {/* Match the action layout bar design of your existing image loops */}
+                                        <div className="p-1.5 border-t bg-blue-50/40 flex items-center justify-between text-[11px] font-medium gap-1">
+                                            <button
+                                                type="button"
+                                                onClick={() => selectNewAsCover(preview.name)}
+                                                className={`px-1.5 py-0.5 rounded transition ${
+                                                    isCurrentCover ? 'text-blue-700 font-bold bg-blue-100' : 'text-gray-600 hover:bg-gray-200'
+                                                }`}
+                                            >
+                                                Set Cover
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => removeNewImage(idx, preview.name)}
+                                                className="px-1.5 py-0.5 rounded transition text-red-600 hover:bg-red-50"
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                             </div>
                         </div>
 
