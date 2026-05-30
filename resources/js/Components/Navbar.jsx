@@ -96,7 +96,7 @@ export default function Navbar() {
                             scrollToSection("leadership");
                         }}
                         className={`transition ${
-                            active === "services"
+                            active === "leadership"
                                 ? "text-blue-700 font-semibold"
                                 : "text-gray-700 hover:text-blue-700"
                         }`}
