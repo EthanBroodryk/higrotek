@@ -60,4 +60,31 @@ class ManageUsersController extends Controller
 
         return redirect()->route('users.index')->with('success', 'User account deployed successfully.');
     }
+
+    public function update(Request $request, User $user)
+    {
+        
+        $this->authorizeAdmin($request);
+
+        
+        $validated = $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|string|lowercase|email|max:255|unique:users,email,' . $user->id,
+            'role'     => 'required|string|in:user,admin',
+            'password' => 'nullable|string|min:8', 
+        ]);
+
+        
+        if (!empty($validated['password'])) {
+            $validated['password'] = Hash::make($validated['password']);
+        } else {
+            
+            unset($validated['password']);
+        }
+
+        
+        $user->update($validated);
+
+        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+    }
 }
