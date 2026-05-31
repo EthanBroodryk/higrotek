@@ -33,6 +33,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/users/create', [ManageUsersController::class, 'create'])->name('users.create');
     Route::post('/users', [ManageUsersController::class, 'store'])->name('users.store');
     Route::patch('/users/{user}', [ManageUsersController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [ManageUsersController::class, 'destroy'])->name('users.destroy');
     
 
     // Dashboard Hub

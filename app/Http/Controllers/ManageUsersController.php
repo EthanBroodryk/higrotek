@@ -87,4 +87,20 @@ class ManageUsersController extends Controller
 
         return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }
+
+    public function destroy(Request $request, User $user)
+    {
+        // Enforce admin authorization gate
+        $this->authorizeAdmin($request);
+
+        // Fail-safe protection: Prevent an admin from deleting their own logged-in account
+        if ($request->user()->id === $user->id) {
+            return redirect()->route('users.index')->with('error', 'You cannot delete your own active administrator session.');
+        }
+
+        // Permanently delete the user account profile record
+        $user->delete();
+
+        return redirect()->route('users.index')->with('success', 'User account permanently purged.');
+    }
 }

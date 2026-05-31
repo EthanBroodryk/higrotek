@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm ,router} from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function Index({ users = [] }) {
@@ -38,6 +38,18 @@ export default function Index({ users = [] }) {
         patch(route('users.update', id), {
             preserveScroll: true,
             onSuccess: () => setEditingId(null),
+        });
+    };
+
+    const handleDelete = (id) => {
+        router.delete(route('users.destroy', id), {
+            preserveScroll: true,
+            onBefore: () => confirm('Are you absolutely sure you want to permanently delete this user profile?'),
+            onSuccess: () => {
+                if (editingId === id) {
+                    cancelEditing();
+                }
+            }
         });
     };
 
@@ -214,13 +226,24 @@ export default function Index({ users = [] }) {
                                                                 </button>
                                                             </div>
                                                         ) : (
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => startEditing(userItem)}
-                                                                className="inline-flex items-center rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-green-600 shadow-sm transition hover:bg-gray-50"
-                                                            >
-                                                                Manage
-                                                            </button>
+                                                            /* Added an inline-flex wrapper to hold both actions side by side */
+                                                            <div className="inline-flex gap-2">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => startEditing(userItem)}
+                                                                    className="inline-flex items-center rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-green-600 shadow-sm transition hover:bg-gray-50"
+                                                                >
+                                                                    Manage
+                                                                </button>
+                                                                
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleDelete(userItem.id)}
+                                                                    className="inline-flex items-center rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-600 shadow-sm transition hover:bg-red-50"
+                                                                >
+                                                                    Delete
+                                                                </button>
+                                                            </div>
                                                         )}
                                                     </td>
 
