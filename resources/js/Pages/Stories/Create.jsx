@@ -36,6 +36,43 @@ export default function Create() {
             reader.readAsDataURL(file);
         });
     };
+
+    const handleRemoveImage = (indexToRemove, e) => {
+        // Prevent the click event from bubbling up and setting this image as the cover right before it's deleted
+        e.stopPropagation();
+
+        // 1. Remove from data.images
+        const updatedImages = data.images.filter((_, index) => index !== indexToRemove);
+        
+        // 2. Remove from previews state
+        const updatedPreviews = previews.filter((_, index) => index !== indexToRemove);
+
+        // 3. Adjust cover index logic
+        let newCoverIndex = coverIndex;
+        if (indexToRemove === coverIndex) {
+            // Fallback to the first image if the cover was removed, or 0 if no images remain
+            newCoverIndex = updatedImages.length > 0 ? 0 : 0;
+        } else if (indexToRemove < coverIndex) {
+            // Shift index down by 1 if an image before the cover was removed
+            newCoverIndex = coverIndex - 1;
+        }
+
+        // 4. Update all relevant states
+        setPreviews(updatedPreviews);
+        setCoverIndex(newCoverIndex);
+        
+        // Inertia useForm helper requires an object or callback to match state updates accurately
+        setData((oldData) => ({
+            ...oldData,
+            images: updatedImages,
+            cover_index: newCoverIndex
+        }));
+};
+
+
+
+
+
     const submit = (e) => {
         e.preventDefault();
 
@@ -48,7 +85,7 @@ export default function Create() {
         <AuthenticatedLayout
             header={
                 <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold text-gray-800">
+                    <h2 className="text-xl font-semibold text-blue-500">
                         Create Story
                     </h2>
 
@@ -163,6 +200,16 @@ export default function Create() {
                                                 src={src}
                                                 className="h-28 w-full object-cover"
                                             />
+
+                                            {/* REMOVE BUTTON */}
+                                            <button
+                                                type="button"
+                                                onClick={(e) => handleRemoveImage(index, e)}
+                                                className="absolute top-1 right-1 rounded bg-white/80 px-1.5 py-0.5 text-xs font-semibold text-red-600 shadow-sm backdrop-blur-sm hover:bg-white hover:text-red-700 transition"
+                                                title="Remove image"
+                                            >
+                                                Remove
+                                            </button>
 
                                             {coverIndex === index && (
                                                 <span className="absolute bottom-1 left-1 bg-blue-500 text-white text-xs px-2 py-0.5 rounded">

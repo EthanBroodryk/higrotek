@@ -498,12 +498,22 @@ export default function Welcome() {
                                                 </div>
                                             </div>
                                             <div className="px-5 pb-5 pt-3 border-t border-gray-50 flex items-center justify-between text-xs text-gray-400">
-                                                <span>By {story.user?.name ?? 'Higrotek Team'}</span>
+                                                {/* Stack Date on top and Author underneath on the left */}
+                                                <div className="flex flex-col gap-0.5 items-start">
+                                                    <span className="font-medium text-gray-500">
+                                                        Published: {story.created_at 
+                                                        ? new Date(story.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+                                                        : 'Recent'}
+                                                    </span>
+                                                    <span>By {story.user?.name ?? 'Higrotek Team'}</span>
+                                                </div>
+
+                                                {/* Link stays pushed to the right, centered vertically with the text block */}
                                                 <Link href={route('stories.show.client', story.id)} className="text-blue-600 font-bold hover:text-blue-800 flex items-center gap-1 group/link">
                                                     Read Full Story <span className="transition-transform group-hover/link:translate-x-0.5">→</span>
                                                 </Link>
                                             </div>
-                                        </div>
+                                     </div>
                                     );
                                 })}
                             </div>

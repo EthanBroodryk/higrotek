@@ -1,8 +1,9 @@
 import { useState } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, useForm } from "@inertiajs/react";
+import { Head, useForm,usePage } from "@inertiajs/react";
 
 export default function Dashboard() {
+    const { logo } = usePage().props;
     const { data, setData, post, processing, progress } = useForm({
         logo: null,
     });
@@ -48,20 +49,21 @@ export default function Dashboard() {
 
                         <form onSubmit={submit} className="space-y-6">
 
-                            {/* PREVIEW */}
+                             {/* PREVIEW */}
                             <div>
                                 <p className="text-sm font-medium text-gray-600 mb-2">
                                     Current Logo
                                 </p>
 
-                                {preview ? (
+                                {/* Checks local file selection first, then globally saved logo path */}
+                                {preview || logo ? (
                                     <img
-                                        src={preview}
-                                        className="h-20 w-auto rounded shadow"
+                                        src={preview || logo}
+                                        className="h-20 w-auto rounded-lg object-contain shadow-sm border border-gray-100 p-1"
                                         alt="Logo Preview"
                                     />
                                 ) : (
-                                    <div className="h-20 w-20 flex items-center justify-center border rounded bg-gray-50 text-gray-400">
+                                    <div className="h-20 w-20 flex items-center justify-center border border-dashed rounded-lg bg-gray-50 text-xs font-medium text-gray-400">
                                         No Logo
                                     </div>
                                 )}

@@ -84,16 +84,26 @@ export default function ClientShow({ story }) {
                     </Button>
                     {/* Main Content Area styled using shadcn Card component shell layout structure */}
                     <Card className="overflow-hidden border-slate-200/60 shadow-sm rounded-3xl bg-white">
+                        <div className="flex flex-col gap-0.5 items-start">
+                            <span className="font-medium text-gray-500">
+                                Published: {story.created_at 
+                                ? new Date(story.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+                                : 'Recent'}
+                            </span>
+                            <span>By {story.user?.name ?? 'Higrotek Team'}</span>
+                        </div>
                         {coverImage ? (
-                            <div className="relative h-64 md:h-[460px] w-full bg-slate-950 group overflow-hidden">
+                            /* Reduced the height from h-[460px] to h-[320px] to make it more compact */
+                            <div className="relative h-48 md:h-[320px] w-full bg-slate-950 group overflow-hidden">
                                 <div 
                                     className="absolute inset-0 bg-cover bg-center blur-2xl opacity-30 scale-110 pointer-events-none"
                                     style={{ backgroundImage: `url('/storage/${coverImage}')` }}
-                                />
+                                    />
                                 <img 
                                     src={`/storage/${coverImage}`} 
                                     alt={story?.title} 
-                                    className="relative w-full h-full object-contain z-0"
+                                    /* Changed object-contain to object-cover to prevent layout distortion */
+                                    className="relative w-full h-full object-cover z-0"
                                 />
 
                                 {/* Interactive Overlay */}
@@ -103,13 +113,12 @@ export default function ClientShow({ story }) {
                                         size="lg"
                                         className="gap-2 bg-white text-slate-950 hover:bg-slate-100 font-medium shadow-xl rounded-xl transition transform md:translate-y-2 md:group-hover:translate-y-0 duration-300"
                                     >
-                                        <Maximize2 className="h-4 w-4 text-slate-500" />
+                                    <Maximize2 className="h-4 w-4 text-slate-500" />
                                         View Gallery ({allImages.length})
                                     </Button>
-                        
                                 </div>
                             </div>
-                        ) : (
+                            ) : (
                             <div className="border border-dashed bg-slate-50/50 p-12 text-center text-slate-400 m-6 rounded-2xl">
                                 No images uploaded for this project story.
                             </div>
