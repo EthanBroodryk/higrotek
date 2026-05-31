@@ -6,7 +6,7 @@ export default function Index({ stories }) {
         <AuthenticatedLayout
             header={
                 <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold text-gray-800">
+                    <h2 className="text-xl font-semibold text-blue-500">
                         Company Stories
                     </h2>
 
@@ -50,7 +50,7 @@ export default function Index({ stories }) {
                                 return (
                                     <div
                                         key={story.id}
-                                        className="overflow-hidden rounded-2xl border bg-white shadow-sm transition hover:shadow-md flex flex-col justify-between"
+                                        className="overflow-hidden rounded-2xl  bg-white shadow-sm transition hover:shadow-md flex flex-col justify-between"
                                     >
                                         <div>
                                             {/* MEDIA WITH LIVE OVERLAY COUNTER */}

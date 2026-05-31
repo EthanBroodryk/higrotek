@@ -45,13 +45,13 @@ export default function Index({ users = [] }) {
         <AuthenticatedLayout
             header={
                 <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold text-gray-800">
+                    <h2 className="text-xl font-semibold text-blue-500">
                         User Management
                     </h2>
 
                     <Link
                         href={route('users.create')}
-                        className="rounded-xl bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-green-700"
+                        className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-green-700"
                     >
                         + Create User
                     </Link>

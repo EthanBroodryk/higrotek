@@ -52,6 +52,19 @@ export default function ClientShow({ story }) {
         ));
     };
 
+    const scrollToSection = (id, fallbackUrl = "/") => {
+        
+        if (window.location.pathname === "/") {
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: "smooth" });
+                return;
+            }
+        }
+        sessionStorage.setItem("scrollTargetId", id);
+        window.location.href = fallbackUrl;
+    };
+
     return (
         <>
             <Navbar />
@@ -61,13 +74,14 @@ export default function ClientShow({ story }) {
                 <div className="max-w-4xl mx-auto px-6">
                     
                     {/* Navigation Link styled as an atomic shadcn subtle button */}
-                    <Button asChild variant="ghost" className="mb-6 gap-2 text-muted-foreground hover:text-primary">
-                        <Link href="/">
-                            <ArrowLeft className="h-4 w-4" />
-                            Back to Projects
-                        </Link>
+                    <Button 
+                        variant="ghost" 
+                        onClick={() => scrollToSection("latest-stories")}
+                        className="mb-6 gap-2 text-muted-foreground hover:text-primary"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                        Back to Projects
                     </Button>
-
                     {/* Main Content Area styled using shadcn Card component shell layout structure */}
                     <Card className="overflow-hidden border-slate-200/60 shadow-sm rounded-3xl bg-white">
                         {coverImage ? (
@@ -128,7 +142,7 @@ export default function ClientShow({ story }) {
                             <div className="flex items-center justify-center gap-2 mb-6">
                                 <LayoutGrid className="h-4 w-4 text-slate-400" />
                                 <h2 className="text-xs font-semibold tracking-widest uppercase text-slate-400">
-                                    Visual Project Records
+                                    Gallary 
                                 </h2>
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">

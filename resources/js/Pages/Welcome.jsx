@@ -116,6 +116,22 @@ export default function Welcome() {
         return () => clearInterval(interval);
     }, [stories, isPaused, canScrollRight]);
 
+    // Add this inside your main Home component file
+    //helps to scroll back to position
+    useEffect(() => {
+        const scrollTargetId = sessionStorage.getItem("scrollTargetId");
+        if (scrollTargetId) {
+            // Clear it immediately so it doesn't re-fire on subsequent refreshes
+            sessionStorage.removeItem("scrollTargetId");
+            
+            // Brief timeout ensures the DOM has completely painted before executing scroll
+            setTimeout(() => {
+                const element = document.getElementById(scrollTargetId);
+                if (element) element.scrollIntoView({ behavior: "smooth" });
+            }, 100);
+        }
+    }, []);
+
     return (
         <>
             <Navbar />

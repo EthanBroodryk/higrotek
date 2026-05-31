@@ -20,6 +20,18 @@ export default function Show({ story }) {
         });
     };
 
+    const renderStoryParagraphs = (text) => {
+        if (!text) return null;
+        return text.split(/\n\s*\n/).map((para, index) => (
+            <p 
+                key={index} 
+                className="text-slate-700 leading-relaxed font-serif text-lg md:text-xl text-left max-w-2xl mx-auto mb-6 break-words whitespace-pre-line"
+            >
+                {para.trim()}
+            </p>
+        ));
+    };
+
     return (
         <AuthenticatedLayout
             header={
@@ -41,7 +53,7 @@ export default function Show({ story }) {
 
             <div className="py-12">
                 <div className="max-w-4xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white overflow-hidden border rounded-2xl shadow-sm p-6 sm:p-8">
+                    <div className="bg-white overflow-hidden  rounded-2xl shadow-sm p-6 sm:p-8">
 
                         {/* STORY TITLE */}
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -61,7 +73,7 @@ export default function Show({ story }) {
 
                         {/* HERO COVER IMAGE */}
                         {coverImage ? (
-                            <div className="relative rounded-2xl overflow-hidden shadow-sm border bg-gray-50 mb-6 max-h-[450px]">
+                            <div className="relative rounded-2xl overflow-hidden shadow-sm border border-gray-200 bg-gray-50 mb-6 max-h-[450px]">
                                 <img
                                     src={`/storage/${coverImage}`}
                                     alt={`${story.title} Cover`}
@@ -80,7 +92,7 @@ export default function Show({ story }) {
                         {/* DESCRIPTION BLOCK */}
                         <div className="prose max-w-none mb-8">
                             <p className="text-gray-700 text-lg leading-relaxed whitespace-pre-line">
-                                {story.description}
+                                 {renderStoryParagraphs(story?.description)}
                             </p>
                         </div>
 

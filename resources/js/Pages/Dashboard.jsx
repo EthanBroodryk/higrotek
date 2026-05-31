@@ -32,9 +32,9 @@ export default function Dashboard() {
     return (
         <AuthenticatedLayout
             header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Manage Company Logo
-                </h2>
+                    <h2 className="text-xl font-semibold leading-tight text-blue-500">
+                        Manage Company Logo
+                    </h2>
             }
         >
             <Head title="Dashboard" />
@@ -42,9 +42,9 @@ export default function Dashboard() {
             <div className="py-12">
                 <div className="mx-auto max-w-5xl sm:px-6 lg:px-8">
                     <div className="bg-white shadow-sm sm:rounded-lg p-8">
-                        <h3 className="text-2xl font-bold text-gray-800 mb-6">
+                        {/* <h3 className="text-2xl font-bold text-gray-800 mb-6">
                             Company Branding
-                        </h3>
+                        </h3> */}
 
                         <form onSubmit={submit} className="space-y-6">
 
@@ -77,7 +77,13 @@ export default function Dashboard() {
                                     type="file"
                                     accept="image/*"
                                     onChange={handleLogoChange}
-                                    className="block w-full text-sm border rounded p-2"
+                                    className="block w-full text-sm text-gray-500
+                                        file:mr-4 file:py-2 file:px-4
+                                        file:rounded-md file:border-0
+                                        file:text-sm file:font-semibold
+                                        file:bg-blue-50 file:text-blue-700
+                                        hover:file:bg-blue-100
+                                        cursor-pointer"
                                 />
 
                                 {progress && (
@@ -91,7 +97,7 @@ export default function Dashboard() {
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition"
+                                className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-green-700 transition"
                             >
                                 Save Logo
                             </button>

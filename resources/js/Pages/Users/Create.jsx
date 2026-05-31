@@ -21,9 +21,9 @@ export default function Create() {
         <AuthenticatedLayout
             header={
                 <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold text-gray-800">Add New User</h2>
+                    <h2 className="text-xl font-semibold text-blue-500">Add New User</h2>
                     <Link href={route('users.index')} className="text-sm text-gray-600 hover:text-gray-900">
-                        ← Back to Directory
+                        ← Back to User Management
                     </Link>
                 </div>
             }
