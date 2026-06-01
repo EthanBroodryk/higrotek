@@ -1,22 +1,44 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, usePage } from "@inertiajs/react";
 
 export default function Navbar() {
     const [active, setActive] = useState("home");
     const [open, setOpen] = useState(false);
     
-    // ✅ Extract logo, stories, and auth session state from global Inertia page props
+    // Extract logo, stories, and auth session state from global Inertia page props
     const { logo, stories = [], auth } = usePage().props;
     const hasStories = stories.length > 0;
     const isLoggedIn = !!auth?.user;
 
-    // Helper function to handle fallback smoothing if sections don't exist on sub-pages
+    // --- NEW: Listen for redirects from other pages ---
+    useEffect(() => {
+        // Only run this if we are currently on the home page layout
+        if (window.location.pathname === "/") {
+            const scrollTargetId = sessionStorage.getItem("scrollTargetId");
+            if (scrollTargetId) {
+                // Small timeout allows the DOM to fully render before trying to scroll
+                setTimeout(() => {
+                    const element = document.getElementById(scrollTargetId);
+                    if (element) {
+                        element.scrollIntoView({ behavior: "smooth" });
+                    }
+                    // Clean up after scrolling so it doesn't fire on accidental reloads
+                    sessionStorage.removeItem("scrollTargetId");
+                }, 100);
+            }
+        }
+    }, []);
+
+    // Updated helper function to handle cross-page redirection strings securely
     const scrollToSection = (id, fallbackUrl = "/") => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.scrollIntoView({ behavior: "smooth" });
+        if (window.location.pathname === "/") {
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: "smooth" });
+            }
         } else {
-            // If the user is on /projects/{id}, redirect them home first
+            // Save the destination id so our useEffect hook can catch it on reload
+            sessionStorage.setItem("scrollTargetId", id);
             window.location.href = fallbackUrl;
         }
     };
@@ -115,7 +137,7 @@ export default function Navbar() {
                                 active === "projects"
                                     ? "text-blue-700 font-semibold"
                                     : "text-gray-700 hover:text-blue-700"
-                            }`}
+                        }`}
                         >
                             Projects
                         </button>
@@ -136,7 +158,7 @@ export default function Navbar() {
                         Contact
                     </button>
 
-                    {/* ✅ DESKTOP LOGIN/DASHBOARD ROUTE LINK */}
+                    {/* DESKTOP LOGIN/DASHBOARD ROUTE LINK */}
                     <Link
                         href={isLoggedIn ? route('dashboard') : route('login')}
                         className="text-xs font-semibold text-gray-400 hover:text-blue-600 border-l border-gray-200 pl-6 transition duration-200"
@@ -211,8 +233,6 @@ export default function Navbar() {
                         Services
                     </button>
 
-
-
                     <button
                         onClick={() => {
                             setOpen(false);
@@ -262,7 +282,6 @@ export default function Navbar() {
                     </button>
 
                     <div className="px-6 pt-4 grid grid-cols-2 gap-3 border-t border-gray-100 mt-2">
-                        {/* ✅ MOBILE LOGIN/DASHBOARD ACTION LINK */}
                         <Link 
                             href={isLoggedIn ? route('dashboard') : route('login')}
                             className="px-4 py-2.5 border border-gray-200 text-center text-sm font-medium text-gray-600 rounded-xl hover:bg-gray-50 transition"
