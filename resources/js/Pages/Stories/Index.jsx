@@ -1,7 +1,24 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link,router } from '@inertiajs/react';
+import { useState, useEffect } from 'react';
 
-export default function Index({ stories }) {
+export default function Index({ stories,filters }) {
+    const [search, setSearch] = useState(filters.search || '');
+    const [date, setDate] = useState(filters.date || '');
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            router.get(
+                route('stories.index'),
+                { search: search, date: date }, // Sent both parameters
+                { 
+                    preserveState: true, 
+                    replace: true        
+                }
+            );
+        }, 300); 
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [search, date]); 
     return (
         <AuthenticatedLayout
             header={
@@ -23,6 +40,49 @@ export default function Index({ stories }) {
 
             <div className="py-8">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    {/* SEARCH & DATE FILTERS */}
+                    <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center max-w-2xl">
+                        {/* Text Search */}
+                        <div className="relative flex-1 rounded-xl shadow-sm">
+                            <input
+                                type="text"
+                                name="search"
+                                id="search"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="w-full rounded-xl border-gray-200 pl-4 pr-10 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                placeholder="Search stories..."
+                            />
+                            {search && (
+                                <button 
+                                    onClick={() => setSearch('')}
+                                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 text-xs font-semibold"
+                                >
+                                    Clear
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Date Filter */}
+                        <div className="relative rounded-xl shadow-sm sm:w-64">
+                            <input
+                                type="date"
+                                name="date"
+                                id="date"
+                                value={date}
+                                onChange={(e) => setDate(e.target.value)}
+                                className="w-full rounded-xl border-gray-200 px-4 text-sm shadow-sm text-gray-700 focus:border-blue-500 focus:ring-blue-500"
+                            />
+                            {date && (
+                                <button 
+                                    onClick={() => setDate('')}
+                                    className="absolute inset-y-0 right-8 flex items-center text-gray-400 hover:text-gray-600 text-xs font-semibold"
+                                >
+                                    Clear
+                                </button>
+                            )}
+                        </div>
+                    </div>
 
                     {stories.length === 0 ? (
                         <div className="flex flex-col items-center justify-center rounded-xl border bg-white p-10 text-center shadow-sm">

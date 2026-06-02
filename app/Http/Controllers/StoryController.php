@@ -27,11 +27,32 @@ class StoryController extends Controller
         ]);
     }
 
-    public function index()
+public function index(Request $request)
     {
-        $stories = Story::with(['images', 'coverImage', 'user'])->latest()->get();
+        $search = $request->input('search');
+        $date = $request->input('date'); // Capture the date input
+
+        $stories = Story::with(['user', 'images', 'coverImage'])
+            ->when($search, function ($query, $search) {
+                $query->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
+            })
+            ->when($date, function ($query, $date) {
+                // Filters stories created on or after the selected date
+                $query->whereDate('created_at', '>=', $date);
+            })
+            ->latest()
+            ->get();
+
         return Inertia::render('Stories/Index', [
             'stories' => $stories,
+            'filters' => [
+                'search' => $search,
+                'date' => $date // Pass back to sync frontend state
+            ]
         ]);
     }
 

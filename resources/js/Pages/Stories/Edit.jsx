@@ -145,7 +145,7 @@ export default function Edit({ story }) {
         <AuthenticatedLayout
             header={
                 <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold text-gray-800">Edit Story Details</h2>
+                    <h2 className="text-xl font-semibold text-blue-500">Edit Story Details</h2>
                     <Link href={route('stories.index')} className="text-sm text-gray-600 hover:text-gray-900">
                         ← Cancel & Go Back
                     </Link>
