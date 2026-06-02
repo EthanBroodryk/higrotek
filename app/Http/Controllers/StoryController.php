@@ -45,7 +45,8 @@ public function index(Request $request)
                 $query->whereDate('created_at', '>=', $date);
             })
             ->latest()
-            ->get();
+            ->paginate(3) 
+            ->withQueryString();
 
         return Inertia::render('Stories/Index', [
             'stories' => $stories,

@@ -64,6 +64,7 @@ export default function Index({ stories,filters }) {
                         </div>
 
                         {/* Date Filter */}
+              
                         <div className="relative rounded-xl shadow-sm sm:w-64">
                             <input
                                 type="date"
@@ -71,12 +72,20 @@ export default function Index({ stories,filters }) {
                                 id="date"
                                 value={date}
                                 onChange={(e) => setDate(e.target.value)}
-                                className="w-full rounded-xl border-gray-200 px-4 text-sm shadow-sm text-gray-700 focus:border-blue-500 focus:ring-blue-500"
+                                // Added tailwind pseudo-element variants to safely strip browser-native UI flags
+                                className="w-full rounded-xl border-gray-200 pl-4 pr-12 text-sm shadow-sm text-gray-700 focus:border-blue-500 focus:ring-blue-500 cursor-pointer
+                                    [&::-webkit-calendar-picker-indicator]:hidden 
+                                    [&::-webkit-clear-button]:hidden 
+                                    [&::-webkit-inner-spin-button]:hidden"
                             />
                             {date && (
                                 <button 
-                                    onClick={() => setDate('')}
-                                    className="absolute inset-y-0 right-8 flex items-center text-gray-400 hover:text-gray-600 text-xs font-semibold"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setDate('');
+                                    }}
+                                    // Shifted over to right-3 for a standard clean layout right padding anchor
+                                    className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 text-xs font-semibold bg-white pl-1"
                                 >
                                     Clear
                                 </button>
@@ -84,7 +93,7 @@ export default function Index({ stories,filters }) {
                         </div>
                     </div>
 
-                    {stories.length === 0 ? (
+                    {stories.data.length === 0 ? (
                         <div className="flex flex-col items-center justify-center rounded-xl border bg-white p-10 text-center shadow-sm">
                             <h3 className="text-lg font-semibold text-gray-700">
                                 No stories yet
@@ -102,7 +111,7 @@ export default function Index({ stories,filters }) {
                         </div>
                     ) : (
                         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                            {stories.map((story) => {
+                            {stories.data.map((story) => {
                                 // Find the cover image or fallback to the very first image in the relationship array
                                 const displayImage = story.cover_image?.path || story.images?.[0]?.path;
                                 const imageCount = story.images?.length || 0;
@@ -141,6 +150,13 @@ export default function Index({ stories,filters }) {
                                                     {story.title}
                                                 </h3>
 
+                                                {/* NEW: Clean, muted published date line */}
+                                                <p className="text-[11px] text-gray-400 mt-0.5">
+                                                    Published: {story.created_at 
+                                                    ? new Date(story.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
+                                                    : 'Recent'}
+                                                </p>
+
                                                 {story.description && (
                                                     <p className="mt-1 line-clamp-3 text-sm text-gray-600">
                                                         {story.description}
@@ -166,7 +182,29 @@ export default function Index({ stories,filters }) {
                                 );
                             })}
                         </div>
+
+                        
                     )}
+                    {/* PAGINATION CONTROLS */}
+                        {stories.links && stories.links.length > 3 && (
+                            <div className="mt-12 flex justify-center">
+                                <div className="flex gap-1 bg-white p-1.5 rounded-xl border border-gray-100 shadow-sm">
+                                    {stories.links.map((link, index) => (
+                                        <Link
+                                            key={index}
+                                            href={link.url || '#'}
+                                            preserveState // Retains filter text & settings while changing pages
+                                            dangerouslySetInnerHTML={{ __html: link.label }}
+                                            className={`px-3.5 py-1.5 text-sm font-medium rounded-lg transition duration-200 ${
+                                                link.active
+                                                    ? 'bg-blue-600 text-white'
+                                                    : 'text-gray-600 hover:bg-gray-50'
+                                            } ${!link.url ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''}`}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                 </div>
             </div>
