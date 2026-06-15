@@ -74,6 +74,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                 >
                                     Home Carousel
                                 </NavLink>
+                                <NavLink
+                                    href={route('services.index')}
+                                    active={route().current('services.*')}
+                                >
+                                    Services Management
+                                </NavLink>
                             </div>
                         </div>
 
@@ -196,6 +202,12 @@ export default function AuthenticatedLayout({ header, children }) {
                             active={route().current('home-carousel.*')}
                         >
                             Home Carousel
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('services.index')}
+                            active={route().current('services.*')}
+                        >
+                            Services Management
                         </ResponsiveNavLink>
                     </div>
 

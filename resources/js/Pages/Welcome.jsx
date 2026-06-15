@@ -2,11 +2,11 @@ import { useRef, useState, useEffect } from 'react';
 import { Head, Link, usePage, useForm } from '@inertiajs/react';
 import Navbar from "@/Components/Navbar";
 
+
 export default function Welcome() {
     // Destructured stories alongside the company logo from Inertia props
-    const { logo, stories = [], carouselImages = [] } = usePage().props;
+    const { logo, stories = [], carouselImages = [], services = [] } = usePage().props;
     const hasStories = stories.length > 0;
-
     const [currentSlide, setCurrentSlide] = useState(0);
 
     useEffect(() => {
@@ -298,7 +298,7 @@ export default function Welcome() {
 
                 {/* SERVICES */}
                 <section id="services" className="scroll-mt-24 max-w-6xl mx-auto px-6 py-20">
-                    {/* Section Header with Fade-In Up Animation */}
+
                     <div className="text-center mb-12 animate-fade-in-up animate-duration-700 animate-ease-out">
                         <h2 className="text-3xl font-bold text-blue-700 sm:text-4xl tracking-tight">
                             Our Professional Services
@@ -308,94 +308,42 @@ export default function Welcome() {
                         </p>
                     </div>
 
-                    {/* Services Grid */}
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        
-                        {/* 1. Solar Installations (EPC) */}
-                        <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 transition duration-300 hover:shadow-md hover:-translate-y-0.5">
-                            <div className="h-12 w-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center mb-5 font-bold text-lg">01</div>
-                            <h3 className="text-xl font-bold text-gray-900">
-                                Solar Installations
-                            </h3>
-                            <p className="mt-3 text-gray-600 text-sm leading-relaxed">
-                                We offer end-to-end EPC (Engineering, Procurement, and Construction) solutions for solar PV systems across the commercial and industrial sectors. Our services cover the full project lifecycle — from initial design and permitting to procurement, installation, and commissioning — ensuring reliable energy solutions that reduce costs and support sustainability.
-                            </p>
-                        </div>
+                        {services.map((service, index) => {
+                            const image = service.images?.[0];
 
-                        {/* 2. Structures & Civil Works */}
-                        <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 transition duration-300 hover:shadow-md hover:-translate-y-0.5">
-                            <div className="h-12 w-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center mb-5 font-bold text-lg">02</div>
-                            <h3 className="text-xl font-bold text-gray-900">
-                                Structures & Civil Works
-                            </h3>
-                            <p className="mt-3 text-gray-600 text-sm leading-relaxed">
-                                Turnkey installation solutions for rooftop, carport, and ground-mounted solar systems, including all associated civil works. Our services include structural assembly, foundations, trenching, cable routing, and site preparation. With a focus on durability and precision, we ensure every system is built to perform and last.
-                            </p>
-                        </div>
+                            return (
+                                <div
+                                    key={service.id}
+                                    className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 transition duration-300 hover:shadow-md hover:-translate-y-0.5"
+                                >
+                                    <div className="h-12 w-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center mb-5 font-bold text-lg">
+                                        {String(index + 1).padStart(2, '0')}
+                                    </div>
 
-                        {/* 3. Advanced Fault Finding & Diagnostics */}
-               
-                        <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 transition duration-300 hover:shadow-md hover:-translate-y-0.5 flex flex-col justify-between">
-                            <div>
-                                <div className="h-12 w-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center mb-5 font-bold text-lg">03</div>
-                                <h3 className="text-xl font-bold text-gray-900">
-                                    Fault Finding & Diagnostics
-                                </h3>
-                                <p className="mt-3 text-gray-600 text-sm leading-relaxed">
-                                    Specialized troubleshooting using industry-leading tools and technologies. We utilize Sonel insulation resistance testers, thermal inspections, and infrared scanning to detect faults with precision. Our technicians use professional-grade meters and various inverter software platforms to minimize downtime and ensure optimal performance.
-                                </p>
+                                    <h3 className="text-xl font-bold text-gray-900">
+                                        {service.title}
+                                    </h3>
 
-                        {/* Card Image Cover */}
-                                <div className="w-full h-48 rounded-xl overflow-hidden mb-5 bg-gray-50 border">
-                                    <img 
-                                        src="/storage/webpics/ARiWLf.png" 
-                                        alt="Advanced Fault Finding & Diagnostics" 
-                                        className="w-full h-full object-cover"
-                                        onError={(e) => {
-                                            // Failsafe in case file path mapping is broken or missing on local dev
-                                            e.target.style.display = 'none';
-                                        }}
-                                    />
+                                    <p className="mt-3 text-gray-600 text-sm leading-relaxed">
+                                        {service.description}
+                                    </p>
+
+                                    {/* Optional image */}
+                                    {image && (
+                                        <div className="w-full h-48 rounded-xl overflow-hidden mt-5 border bg-gray-50">
+                                            <img
+                                                src={`/storage/${image}`}
+                                                alt={service.title}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                    )}
                                 </div>
-
-
-                            </div>
-                        </div>
-
-                        {/* 4. System Audits & Repairs */}
-                        <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 transition duration-300 hover:shadow-md hover:-translate-y-0.5">
-                            <div className="h-12 w-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center mb-5 font-bold text-lg">04</div>
-                            <h3 className="text-xl font-bold text-gray-900">
-                                System Audits & Repairs
-                            </h3>
-                            <p className="mt-3 text-gray-600 text-sm leading-relaxed">
-                                Comprehensive diagnostics for new and existing solar PV installations to identify performance inefficiencies, safety risks, and non-compliance with electrical standards or best practices. We provide targeted rectification and repair solutions to restore systems to full operational capacity and industry compliance.
-                            </p>
-                        </div>
-
-                        {/* 5. Operations & Maintenance (O&M) */}
-                        <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 transition duration-300 hover:shadow-md hover:-translate-y-0.5">
-                            <div className="h-12 w-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center mb-5 font-bold text-lg">05</div>
-                            <h3 className="text-xl font-bold text-gray-900">
-                                Operations & Maintenance (O&M)
-                            </h3>
-                            <p className="mt-3 text-gray-600 text-sm leading-relaxed">
-                                Customized O&M services designed to maximize system uptime and efficiency. Our solutions include routine solar panel cleaning, remote system monitoring, condition scanning, and proactive optimization based on site-specific parameters, combining preventative maintenance with data insights for long-term reliability.
-                            </p>
-                        </div>
-
-                        {/* 6. System Balancing & Optimisation */}
-                        <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 transition duration-300 hover:shadow-md hover:-translate-y-0.5">
-                            <div className="h-12 w-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center mb-5 font-bold text-lg">06</div>
-                            <h3 className="text-xl font-bold text-gray-900">
-                                Balancing & Optimisation
-                            </h3>
-                            <p className="mt-3 text-gray-600 text-sm leading-relaxed">
-                                Often overlooked, we systematically enhance the performance and efficiency of solar PV assets. Making use of professional audits, rigorous data analysis, and technical fine-tuning, we identify and resolve component mismatches or imbalances across your array to improve your long-term energy yield and maximize ROI.
-                            </p>
-                        </div>
-
+                            );
+                        })}
                     </div>
+
                 </section>
 
                 {/* LEADERSHIP */}

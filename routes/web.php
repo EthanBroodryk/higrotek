@@ -10,6 +10,7 @@ use App\Http\Controllers\StoryController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ManageUsersController;
 use App\Http\Controllers\HomeCarouselController;
+use App\Http\Controllers\ServiceController;
 
 // --- PUBLIC VISITOR ROUTES ---
 Route::get('/', [StoryController::class, 'getStoriesHomePage'])->name('welcome');
@@ -41,6 +42,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/home-carousel', [HomeCarouselController::class, 'index'])->name('home-carousel.index');
     Route::post('/home-carousel', [HomeCarouselController::class, 'store'])->name('home-carousel.store');
     Route::delete('/home-carousel/{homeCarouselPic}', [HomeCarouselController::class, 'destroy'])->name('home-carousel.destroy');
+    //manages services 
+   Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
+Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
+Route::delete('/services/{service}', [ServiceController::class, 'destroy'])->name('services.destroy');
 
     // Dashboard Hub
     Route::get('/dashboard', function () {
