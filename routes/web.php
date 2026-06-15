@@ -52,6 +52,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/team', [TeamController::class, 'index'])->name('team.index');
     Route::post('/team', [TeamController::class, 'store'])->name('team.store');
     Route::delete('/team/{team}', [TeamController::class, 'destroy'])->name('team.destroy');
+    Route::patch('/team/{team}', [TeamController::class, 'update'])->name('team.update');
 
     // Dashboard Hub
     Route::get('/dashboard', function () {

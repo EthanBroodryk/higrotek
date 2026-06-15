@@ -3,9 +3,10 @@ import { Head, Link, usePage, useForm } from '@inertiajs/react';
 import Navbar from "@/Components/Navbar";
 
 
+
 export default function Welcome() {
     // Destructured stories alongside the company logo from Inertia props
-    const { logo, stories = [], carouselImages = [], services = [] } = usePage().props;
+    const { logo, stories = [], carouselImages = [], services = [] , team = [] } = usePage().props;
     const hasStories = stories.length > 0;
     const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -346,97 +347,86 @@ export default function Welcome() {
 
                 </section>
 
-                {/* LEADERSHIP */}
-                <section id="leadership" className="bg-blue-50 py-20 px-6">
-                    <div className="max-w-6xl mx-auto">
-                        <h2 className="text-3xl font-bold text-blue-700 mb-10">
-                            Leadership Team
-                        </h2>
+{/* LEADERSHIP */}
+<section id="leadership" className="bg-blue-50 py-20 px-6">
+    <div className="max-w-6xl mx-auto">
+        <h2 className="text-3xl font-bold text-blue-700 mb-10">
+            Leadership Team
+        </h2>
 
-                        <div className="grid md:grid-cols-3 gap-6">
-                            
-                            {/* Pieter Brand - With Profile Picture */}
-                            <div className="bg-white p-6 rounded-xl shadow transition duration-300 hover:shadow-md hover:-translate-y-0.5 flex flex-col items-start gap-3">
-                                <div className="h-16 w-16 rounded-full overflow-hidden bg-gray-100 border shrink-0">
-                                    <img 
-                                        src="/storage/teammemberpics/9ru1pW.jpg" 
-                                        alt="Pieter Brand" 
-                                        className="w-full h-full object-cover"
-                                        onError={(e) => {
-                                            e.target.style.display = 'none';
-                                        }}
-                                    />
-                                </div>
-                                <div>
-                                    <h3 className="font-semibold text-lg text-gray-900 leading-tight">Pieter Brand</h3>
-                                    <p className="text-sm font-medium text-blue-700 mt-0.5">Managing Director</p>
-                                    
-                                    {/* Professional Credentials Block */}
-                                    <div className="mt-2 pt-2 border-t border-gray-100">
-                                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Professional Credentials</p>
-                                        <p className="text-sm text-gray-700 font-medium mt-0.5">Electrical Engineer</p>
-                                        <p className="text-xs text-gray-500 font-mono mt-0.5">(PrEng No. 20110405)</p>
-                                    </div>
-                                </div>
-                            </div>
-                            {/* Dewald Becker */}
-                            <div className="bg-white p-6 rounded-xl shadow transition duration-300 hover:shadow-md hover:-translate-y-0.5 flex flex-col items-start gap-3">
-                                <div className="h-16 w-16 rounded-full overflow-hidden bg-gray-100 border shrink-0">
-                                    <img 
-                                        src="/storage/teammemberpics/PGVQr6.png" 
-                                        alt="Dewald Becker" 
-                                        className="w-full h-full object-cover"
-                                        onError={(e) => {
-                                            e.target.style.display = 'none';
-                                        }}
-                                    />
-                                </div>
-                                <div>
-                                    <h3 className="font-semibold text-lg text-gray-900 leading-tight">Dewald Becker</h3>
-                                    <p className="text-sm font-medium text-blue-700 mt-0.5">Head of Projects</p>
-                                    
-                                    {/* Technical Qualifications & Specialization Block */}
-                                    <div className="mt-2 pt-2 border-t border-gray-100">
-                                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Qualifications & Focus</p>
-                                        <p className="text-sm text-gray-700 font-medium mt-0.5">
-                                            Qualified Electrician <span className="text-xs text-gray-500 font-mono">(Red Seal Trade Test, NQF Level 5)</span>
-                                        </p>
-                                        <p className="text-xs text-gray-600 mt-1.5 leading-relaxed">
-                                            Specialist in fault finding and implementation of PV & hybrid systems.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Rico du Plessis */}
-                            <div className="bg-white p-6 rounded-xl shadow transition duration-300 hover:shadow-md hover:-translate-y-0.5 flex flex-col items-start gap-3">
-                                <div className="h-16 w-16 rounded-full overflow-hidden bg-gray-100 border shrink-0">
-                                    <img 
-                                        src="/storage/teammemberpics/fXvsjE.png" 
-                                        alt="Rico du Plessis" 
-                                        className="w-full h-full object-cover"
-                                        onError={(e) => {
-                                            e.target.style.display = 'none';
-                                        }}
-                                    />
-                                </div>
-                                <div>
-                                    <h3 className="font-semibold text-lg text-gray-900 leading-tight">Rico du Plessis</h3>
-                                    <p className="text-sm font-medium text-blue-700 mt-0.5">Business Development</p>
-                                    
-                                    {/* Focus & Core Expertise Block */}
-                                    <div className="mt-2 pt-2 border-t border-gray-100">
-                                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Core Focus</p>
-                                        <p className="text-xs text-gray-600 mt-1.5 leading-relaxed">
-                                            New business development and long-term customer relationships.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
+        <div className="grid md:grid-cols-3 gap-6">
+            {team.map((member) => (
+                <div
+                    key={member.id}
+                    className="bg-white p-6 rounded-xl shadow transition duration-300 hover:shadow-md hover:-translate-y-0.5 flex flex-col items-start gap-3"
+                >
+                    {/* IMAGE */}
+                    <div className="h-16 w-16 rounded-full overflow-hidden bg-gray-100 border shrink-0">
+                        <img
+                            src={
+                                member.image
+                                    ? `/storage/${member.image}`
+                                    : '/placeholder.jpg'
+                            }
+                            alt={member.name}
+                            className="w-full h-full object-cover"
+                        />
                     </div>
-                </section>
+
+                    <div>
+                        <h3 className="font-semibold text-lg text-gray-900 leading-tight">
+                            {member.name}
+                        </h3>
+
+                        <p className="text-sm font-medium text-blue-700 mt-0.5">
+                            {member.role}
+                        </p>
+
+                        {/* CONDITIONAL BLOCKS */}
+                        {member.type === 'executive' && (
+                            <div className="mt-2 pt-2 border-t border-gray-100">
+                                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    Professional Credentials
+                                </p>
+                                <p className="text-sm text-gray-700 font-medium mt-0.5">
+                                    {member.credentials}
+                                </p>
+                                <p className="text-xs text-gray-500 font-mono mt-0.5">
+                                    {member.registration_no}
+                                </p>
+                            </div>
+                        )}
+
+                        {member.type === 'technical' && (
+                            <div className="mt-2 pt-2 border-t border-gray-100">
+                                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    Qualifications & Focus
+                                </p>
+                                <p className="text-sm text-gray-700 font-medium mt-0.5">
+                                    {member.credentials}
+                                </p>
+                                <p className="text-xs text-gray-600 mt-1.5 leading-relaxed">
+                                    {member.description}
+                                </p>
+                            </div>
+                        )}
+
+                        {member.type === 'business' && (
+                            <div className="mt-2 pt-2 border-t border-gray-100">
+                                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    Core Focus
+                                </p>
+                                <p className="text-xs text-gray-600 mt-1.5 leading-relaxed">
+                                    {member.description}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            ))}
+        </div>
+    </div>
+</section>
 
                 {/* DYNAMIC PROJECTS CAROUSEL SECTION */}
                 {hasStories && (

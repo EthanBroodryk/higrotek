@@ -11,6 +11,7 @@ use App\Models\StoryImage;
 use Illuminate\Support\Facades\Route;
 use App\Models\HomeCarouselPic;
 use App\Models\Service;
+use App\Models\Team;
 
 class StoryController extends Controller
 {
@@ -25,6 +26,7 @@ class StoryController extends Controller
             'image_url' => asset($pic->image_path),
         ];
     });
+        $team = Team::orderBy('sort_order')->get();
         $logo = CompanyLogo::where('is_active', true)->first();
         $stories = Story::with(['images', 'coverImage', 'user'])->latest()->get();
         $services = Service::where('active', true)->orderBy('sort_order')->get();
@@ -32,7 +34,8 @@ class StoryController extends Controller
         return Inertia::render('Welcome', [
             'stories'        => $stories,
             'carouselImages' => $carouselImages,
-             'services'       => $services,
+            'services'       => $services,
+            'team' => $team,
             'canLogin'       => Route::has('login'),
             'canRegister'    => Route::has('register'),
             'laravelVersion' => \Illuminate\Foundation\Application::VERSION,
