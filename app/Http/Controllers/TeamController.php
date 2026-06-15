@@ -31,7 +31,7 @@ class TeamController extends Controller
         $imagePath = null;
 
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('team', 'public');
+            $imagePath = $request->file('image')->store('teammemberpics', 'public');
         }
 
         Team::create([
