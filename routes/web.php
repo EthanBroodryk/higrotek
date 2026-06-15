@@ -11,6 +11,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ManageUsersController;
 use App\Http\Controllers\HomeCarouselController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\TeamController;
 
 // --- PUBLIC VISITOR ROUTES ---
 Route::get('/', [StoryController::class, 'getStoriesHomePage'])->name('welcome');
@@ -43,9 +44,14 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/home-carousel', [HomeCarouselController::class, 'store'])->name('home-carousel.store');
     Route::delete('/home-carousel/{homeCarouselPic}', [HomeCarouselController::class, 'destroy'])->name('home-carousel.destroy');
     //manages services 
-   Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
-Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
-Route::delete('/services/{service}', [ServiceController::class, 'destroy'])->name('services.destroy');
+    Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
+    Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
+    Route::delete('/services/{service}', [ServiceController::class, 'destroy'])->name('services.destroy');
+
+    // Team Management (Leadership / Staff)
+    Route::get('/team', [TeamController::class, 'index'])->name('team.index');
+    Route::post('/team', [TeamController::class, 'store'])->name('team.store');
+    Route::delete('/team/{team}', [TeamController::class, 'destroy'])->name('team.destroy');
 
     // Dashboard Hub
     Route::get('/dashboard', function () {

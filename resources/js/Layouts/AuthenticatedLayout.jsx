@@ -80,6 +80,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                 >
                                     Services Management
                                 </NavLink>
+                                <NavLink
+                                    href={route('team.index')}
+                                    active={route().current('team.*')}
+                                >
+                                    Team Management
+                                </NavLink>
                             </div>
                         </div>
 
@@ -208,6 +214,13 @@ export default function AuthenticatedLayout({ header, children }) {
                             active={route().current('services.*')}
                         >
                             Services Management
+                        </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
+                            href={route('team.index')}
+                            active={route().current('team.*')}
+                        >
+                            Team Management
                         </ResponsiveNavLink>
                     </div>
 
