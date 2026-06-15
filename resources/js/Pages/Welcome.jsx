@@ -166,7 +166,7 @@ export default function Welcome() {
                                 key={slide.id}
                                 src={slide.image_url}
                                 alt=""
-                                className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
+                                className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
                                     index === currentSlide
                                         ? 'opacity-100'
                                         : 'opacity-0'
