@@ -39,6 +39,8 @@ Route::middleware(['auth'])->group(function () {
 
     //Home Carousel Management
     Route::get('/home-carousel', [HomeCarouselController::class, 'index'])->name('home-carousel.index');
+    Route::post('/home-carousel', [HomeCarouselController::class, 'store'])->name('home-carousel.store');
+    Route::delete('/home-carousel/{homeCarouselPic}', [HomeCarouselController::class, 'destroy'])->name('home-carousel.destroy');
 
     // Dashboard Hub
     Route::get('/dashboard', function () {

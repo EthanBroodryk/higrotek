@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm, Link } from '@inertiajs/react';
+import { Head, useForm, Link ,router } from '@inertiajs/react';
 
 export default function Index({ carousels = [] }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -51,42 +51,6 @@ export default function Index({ carousels = [] }) {
 
                         {/* BODY */}
                         <div className="space-y-5 px-6 py-5">
-
-                            {/* TITLE */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">
-                                    Title
-                                </label>
-                                <input
-                                    type="text"
-                                    value={data.title}
-                                    onChange={(e) =>
-                                        setData('title', e.target.value)
-                                    }
-                                    className="mt-1 w-full rounded-lg border border-gray-200 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                                />
-                                {errors.title && (
-                                    <p className="mt-1 text-sm text-red-500">
-                                        {errors.title}
-                                    </p>
-                                )}
-                            </div>
-
-                            {/* DESCRIPTION */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">
-                                    Description
-                                </label>
-                                <textarea
-                                    rows="4"
-                                    value={data.description}
-                                    onChange={(e) =>
-                                        setData('description', e.target.value)
-                                    }
-                                    className="mt-1 w-full rounded-lg border border-gray-200 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                                />
-                            </div>
-
                             {/* IMAGES */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">
@@ -171,74 +135,48 @@ export default function Index({ carousels = [] }) {
                             </h3>
                         </div>
 
-                        <div className="overflow-x-auto">
-                            <table className="w-full border-collapse text-left text-sm text-gray-500">
+                        <div className="p-6">
 
-                                <thead className="bg-gray-50/70 border-b border-gray-200 text-xs font-semibold uppercase tracking-wider text-gray-400">
-                                    <tr>
-                                        <th className="px-6 py-4 font-semibold">Image</th>
-                                        <th className="px-6 py-4 font-semibold">Title</th>
-                                        <th className="px-6 py-4 font-semibold">Status</th>
-                                        <th className="px-6 py-4 font-semibold text-right">Actions</th>
-                                    </tr>
-                                </thead>
+                        {carousels.length === 0 ? (
+                            <div className="text-center text-sm text-gray-500">
+                                No carousel slides found.
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 
-                                <tbody className="divide-y divide-gray-100 border-t border-gray-100">
+                                {carousels.map((slide) => (
+                                <div
+                                    key={slide.id}
+                                    className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+                                >
+                                    <img
+                                        src={slide.image_url}
+                                        alt=""
+                                        className="h-48 w-full object-cover"
+                                    />
 
-                                    {carousels.map((slide) => (
-                                        <tr
-                                            key={slide.id}
-                                            className="transition hover:bg-gray-50/40"
+                                    <div className="absolute inset-x-0 top-0 flex justify-end p-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                if (confirm('Delete this carousel image?')) {
+                                                    router.delete(
+                                                        route('home-carousel.destroy', slide.id)
+                                                    );
+                                                }
+                                            }}
+                                            className="rounded-lg bg-red-600 px-3 py-1 text-xs font-semibold text-white shadow-sm hover:bg-red-700"
                                         >
-                                            <td className="px-6 py-4">
-                                                <img
-                                                    src={slide.image_url}
-                                                    alt={slide.title}
-                                                    className="h-16 w-24 rounded object-cover"
-                                                />
-                                            </td>
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                                ))}
 
-                                            <td className="px-6 py-4 font-medium text-gray-900">
-                                                {slide.title}
-                                            </td>
+                            </div>
+                        )}
 
-                                            <td className="px-6 py-4">
-                                                <span
-                                                    className={`inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-bold border ${
-                                                        slide.active
-                                                            ? 'bg-green-50 text-green-700 border-green-100'
-                                                            : 'bg-slate-50 text-slate-600 border-slate-100'
-                                                    }`}
-                                                >
-                                                    {slide.active ? 'Active' : 'Inactive'}
-                                                </span>
-                                            </td>
-
-                                            <td className="px-6 py-4 text-right">
-                                                <Link
-                                                    href={route('home-carousel.edit', slide.id)}
-                                                    className="inline-flex items-center rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-blue-600 shadow-sm transition hover:bg-gray-50"
-                                                >
-                                                    Edit
-                                                </Link>
-                                            </td>
-                                        </tr>
-                                    ))}
-
-                                    {carousels.length === 0 && (
-                                        <tr>
-                                            <td
-                                                colSpan="4"
-                                                className="p-6 text-center text-sm text-gray-500"
-                                            >
-                                                No carousel slides found.
-                                            </td>
-                                        </tr>
-                                    )}
-
-                                </tbody>
-                            </table>
-                        </div>
+                    </div>
 
                     </div>
 
