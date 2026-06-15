@@ -9,6 +9,7 @@ use App\Models\CompanyLogo;
 use App\Http\Controllers\StoryController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ManageUsersController;
+use App\Http\Controllers\HomeCarouselController;
 
 // --- PUBLIC VISITOR ROUTES ---
 Route::get('/', [StoryController::class, 'getStoriesHomePage'])->name('welcome');
@@ -35,6 +36,9 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/users/{user}', [ManageUsersController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [ManageUsersController::class, 'destroy'])->name('users.destroy');
     
+
+    //Home Carousel Management
+    Route::get('/home-carousel', [HomeCarouselController::class, 'index'])->name('home-carousel.index');
 
     // Dashboard Hub
     Route::get('/dashboard', function () {

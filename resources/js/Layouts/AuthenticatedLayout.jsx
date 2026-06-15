@@ -68,6 +68,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                 >
                                     User Management
                                 </NavLink>
+                                <NavLink
+                                    href={route('home-carousel.index')}
+                                    active={route().current('home-carousel.*')}
+                                >
+                                    Home Carousel
+                                </NavLink>
                             </div>
                         </div>
 
@@ -184,6 +190,12 @@ export default function AuthenticatedLayout({ header, children }) {
                             active={route().current('users.*')}
                         >
                             User Management
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('home-carousel.index')}
+                            active={route().current('home-carousel.*')}
+                        >
+                            Home Carousel
                         </ResponsiveNavLink>
                     </div>
 
