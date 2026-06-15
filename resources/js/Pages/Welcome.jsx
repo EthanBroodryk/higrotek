@@ -4,8 +4,23 @@ import Navbar from "@/Components/Navbar";
 
 export default function Welcome() {
     // Destructured stories alongside the company logo from Inertia props
-    const { logo, stories = [] } = usePage().props;
+    const { logo, stories = [], carouselImages = [] } = usePage().props;
     const hasStories = stories.length > 0;
+
+    const [currentSlide, setCurrentSlide] = useState(0);
+
+    useEffect(() => {
+        if (carouselImages.length <= 1) return;
+
+        const interval = setInterval(() => {
+            setCurrentSlide((prev) =>
+                prev === carouselImages.length - 1 ? 0 : prev + 1
+            );
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, [carouselImages]);
+    
 
     // --- CONTACT DRAWER COMPONENT HOOK MANAGEMENT ---
     const [isContactOpen, setIsContactOpen] = useState(false);
@@ -139,40 +154,88 @@ export default function Welcome() {
 
             <div className={`min-h-screen bg-gradient-to-b from-blue-50 to-white text-gray-800 pt-16 transition-all duration-300 ${isContactOpen ? 'blur-[2px] pointer-events-none select-none scale-[0.99]' : ''}`}>
 
-                {/* HERO */}
-                <section id="hero" className="scroll-mt-24 flex flex-col items-center justify-center text-center px-6 py-24">
-                    {logo ? (
-                        <img
-                            src={logo}
-                            alt="Higrotek Logo"
-                            className="h-36 sm:h-56 md:h-64 lg:h-72 w-full max-w-xs sm:max-w-none object-contain mb-4"
-                        />
-                    ) : (
-                        <h1 className="text-5xl font-bold text-blue-700">
-                            Higrotek
-                        </h1>
-                    )}
-                    <p className="mt-4 text-xl max-w-2xl text-gray-600">
-                        Powering a cleaner future with smart, sustainable energy solutions.
-                    </p>
+            <section
+                id="hero"
+                className="relative h-[60vh] md:h-[80vh] overflow-hidden"
+            >
+                {carouselImages.length > 0 ? (
+                    <>
+                        {carouselImages.map((slide, index) => (
+                            <img
+                                key={slide.id}
+                                src={slide.image_url}
+                                alt=""
+                                className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
+                                    index === currentSlide
+                                        ? 'opacity-100'
+                                        : 'opacity-0'
+                                }`}
+                            />
+                        ))}
 
-                    <div className="mt-8 flex gap-4">
-                        {/* ✅ UPGRADED CONTACT TRIGGER TO LAUNCH MODAL */}
-                        <button
-                            onClick={openContactDrawer}
-                            className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-md hover:shadow-lg transition"
-                        >
-                            Get a Quote
-                        </button>
+                        <div className="absolute inset-0 bg-black/40" />
 
-                        <button
-                            onClick={() => document.getElementById("who-we-are")?.scrollIntoView({ behavior: "smooth" })}
-                            className="px-6 py-3 border border-blue-600 text-blue-700 rounded-xl hover:bg-blue-50 transition"
-                        >
-                            Learn More
-                        </button>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 text-white">
+                            <h1 className="text-4xl md:text-6xl font-bold">
+                                Higrotek
+                            </h1>
+
+                            <p className="mt-4 max-w-2xl text-lg md:text-xl">
+                                Powering a cleaner future with smart, sustainable energy solutions.
+                            </p>
+
+                            <div className="mt-8 flex flex-wrap justify-center gap-4">
+                                <button
+                                    onClick={openContactDrawer}
+                                    className="rounded-xl bg-blue-600 px-6 py-3 text-white hover:bg-blue-700"
+                                >
+                                    Get a Quote
+                                </button>
+
+                                <button
+                                    onClick={() =>
+                                        document
+                                            .getElementById('who-we-are')
+                                            ?.scrollIntoView({ behavior: 'smooth' })
+                                    }
+                                    className="rounded-xl border border-white px-6 py-3 text-white hover:bg-white/10"
+                                >
+                                    Learn More
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Dots */}
+                        <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 gap-2">
+                            {carouselImages.map((_, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => setCurrentSlide(index)}
+                                    className={`h-3 w-3 rounded-full ${
+                                        currentSlide === index
+                                            ? 'bg-white'
+                                            : 'bg-white/40'
+                                    }`}
+                                />
+                            ))}
+                        </div>
+                    </>
+                ) : (
+                    <div className="flex h-full flex-col items-center justify-center text-center px-6">
+                        {logo ? (
+                            <img
+                                src={logo}
+                                alt="Higrotek Logo"
+                                className="h-36 sm:h-56 md:h-64 lg:h-72 object-contain"
+                            />
+                        ) : (
+                            <h1 className="text-5xl font-bold text-blue-700">
+                                Higrotek
+                            </h1>
+                        )}
                     </div>
-                </section>
+                )}
+            </section>
 
                 {/* WHO WE ARE */}
                 <section id="who-we-are" className="scroll-mt-24 max-w-6xl mx-auto px-6 py-16">

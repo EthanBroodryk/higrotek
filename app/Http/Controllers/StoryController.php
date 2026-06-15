@@ -9,22 +9,33 @@ use App\Models\CompanyLogo;
 use App\Models\Story;
 use App\Models\StoryImage;
 use Illuminate\Support\Facades\Route;
+use App\Models\HomeCarouselPic;
 
 class StoryController extends Controller
 {
     public function getStoriesHomePage(Request $request)
     {
+        $carouselImages = HomeCarouselPic::where('active', true)
+        ->latest()
+        ->get()
+         ->map(function ($pic) {
+        return [
+            'id' => $pic->id,
+            'image_url' => asset($pic->image_path),
+        ];
+    });
         $logo = CompanyLogo::where('is_active', true)->first();
         $stories = Story::with(['images', 'coverImage', 'user'])->latest()->get();
         
         return Inertia::render('Welcome', [
             'stories'        => $stories,
+            'carouselImages' => $carouselImages,
             'canLogin'       => Route::has('login'),
             'canRegister'    => Route::has('register'),
             'laravelVersion' => \Illuminate\Foundation\Application::VERSION,
             'phpVersion'     => PHP_VERSION,
             'logo'           => $logo ? asset('storage/' . $logo->path) : null,
-        ]);
+    ]);
     }
 
 public function index(Request $request)
