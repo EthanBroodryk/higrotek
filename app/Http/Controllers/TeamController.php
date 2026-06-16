@@ -20,6 +20,7 @@ class TeamController extends Controller
 
     public function store(Request $request)
     {
+        
         $validated = $request->validate([
             'name'         => 'required|string|max:255',
             'role'         => 'nullable|string|max:255',
@@ -35,11 +36,11 @@ class TeamController extends Controller
         }
 
         Team::create([
-            'name'        => $validated['name'],
-            'role'        => $validated['role'] ?? null,
-            'description' => $validated['description'] ?? null,
-            'credentials' => $validated['credentials'] ?? null,
-            'image'       => $imagePath,
+            'name'              => $validated['name'],
+            'role'              => $validated['role'] ?? null,
+            'description'       => $validated['description'] ?? null,
+            'credentials_main'  => $validated['credentials'] ?? null, 
+            'image'             => $imagePath,
         ]);
 
         return redirect()->route('team.index')
